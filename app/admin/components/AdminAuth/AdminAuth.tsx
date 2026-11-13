@@ -27,7 +27,8 @@ const RETRIES = [400, 1200];
  * too much CPU (503), and the next one on that instance can fail too (500).
  * Retrying cannot do harm when the request means the same thing sent twice:
  * reads, PUT, PATCH and DELETE, the code check, and uploads, which skip files
- * already stored. Creating a post is not retried: the first try may have saved it.
+ * already stored. Creating a post or an FAQ question is not retried: the first
+ * try may have saved it.
  */
 const REPEATABLE_POSTS = new Set(["/api/admin/media", "/api/admin/session"]);
 
@@ -172,7 +173,7 @@ function Login({ onLogin }: { onLogin: (code: string) => void }) {
       <form className={styles.card} onSubmit={submit}>
         <img className={styles.logo} src="/assets/logo.svg" alt="" width={44} height={44} />
         <h1 className={styles.title}>Panel administracyjny</h1>
-        <p className={styles.lead}>Wpisz kod dostępu, aby zarządzać wpisami na blogu.</p>
+        <p className={styles.lead}>Wpisz kod dostępu, aby zarządzać wpisami na blogu i pytaniami w FAQ.</p>
 
         <label className={styles.label} htmlFor="admin-code">
           Kod dostępu

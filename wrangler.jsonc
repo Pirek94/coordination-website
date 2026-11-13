@@ -6,7 +6,7 @@
   // CONTACT_EMAIL and RESEND_FROM_EMAIL are set in the dashboard; without this
   // every deploy would delete variables that are not listed here.
   "keep_vars": true,
-  // Serves /media and /api/latest-post without Next.js, then hands the rest to
+  // Serves /media and /api/home without Next.js, then hands the rest to
   // the OpenNext Worker in .open-next/worker.js.
   "main": "worker.ts",
   "compatibility_date": "2026-10-01",

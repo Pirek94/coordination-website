@@ -1,97 +1,131 @@
+/* Flat rows between hairlines: a line above every question and one under the last. */
 .accordion {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  border-bottom: 1px solid #d4dce4;
 }
+
+/* Every question filtered out: no stray line is left above what replaces them. */
+.accordion:not(:has(> .item:not([hidden]))) { border-bottom: 0; }
 
 .item {
-  border: 1px solid #dce2e8;
-  border-radius: 16px;
-  background: #fff;
-  overflow: hidden;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  border-top: 1px solid #d4dce4;
 }
 
-.item[data-open="true"] {
-  border-color: #c2cfdd;
-  box-shadow: 0 12px 28px -18px rgba(1, 33, 65, 0.22);
+.item[hidden] { display: none; }
+
+.heading {
+  margin: 0;
+  font: inherit;
 }
 
 .trigger {
   display: flex;
   width: 100%;
   align-items: center;
-  gap: 16px;
-  padding: 22px 24px;
+  gap: 24px;
+  padding: 30px 0;
   border: 0;
+  border-radius: 4px;
   background: transparent;
   color: var(--navy);
   text-align: left;
   cursor: pointer;
-  transition: background 150ms ease;
 }
-
-.trigger:hover { background: #f7f9fb; }
 
 .trigger:focus-visible {
   outline: 2px solid var(--orange);
-  outline-offset: -2px;
+  outline-offset: 2px;
+}
+
+.label {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.category {
+  color: #a2582a;
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .question {
-  flex: 1;
   font-family: "Poppins", sans-serif;
-  font-size: clamp(16px, 1.6vw, 19px);
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-size: clamp(17px, 1.7vw, 20px);
+  font-weight: 500;
+  letter-spacing: -0.015em;
   line-height: 1.4;
+  overflow-wrap: break-word;
+  transition: color 150ms ease;
 }
 
-.chevron {
+.trigger:hover .question { color: #2a5f8f; }
+
+.icon {
   flex: none;
-  width: 22px;
-  height: 22px;
-  color: var(--muted);
-  transition: transform 0.25s ease, color 0.25s ease;
+  width: 26px;
+  height: 26px;
+  color: var(--navy);
+  stroke-width: 1.25;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s ease;
 }
 
-.item[data-open="true"] .chevron {
-  transform: rotate(180deg);
-  color: var(--orange);
+.trigger:hover .icon,
+.item[data-open="true"] .icon { color: var(--orange); }
+
+.item[data-open="true"] .icon { transform: rotate(45deg); }
+
+/* Reached from a link: the question briefly takes the accent colour. */
+.item:target .question {
+  animation: arrive 1.6s ease-out;
 }
 
+@keyframes arrive {
+  from { color: var(--orange); }
+}
+
+/* Opens by growing its one grid row from 0fr to 1fr, which animates to the
+   answer's real height. Closed, it is hidden from the keyboard and screen
+   readers too, once it has finished closing. */
 .panel {
-  padding: 0 24px;
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition: grid-template-rows 0.3s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.3s;
 }
 
+.panel[data-open="true"] {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition: grid-template-rows 0.3s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+}
+
+.clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Clear of the icon's column, so the answer reads under the question. */
 .panelInner {
-  padding: 0 0 24px;
-  border-top: 1px solid #eef2f6;
-  padding-top: 20px;
+  padding: 0 50px 32px 0;
 }
 
-.answerLabel {
-  margin: 0 0 12px;
-  font-family: "Poppins", sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--orange);
-}
-
-.paragraph {
-  margin: 0 0 14px;
-  color: #414c5a;
-  font-size: 15px;
-  line-height: 1.75;
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-top: 22px;
 }
 
 .cta {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 6px;
   padding: 12px 24px;
   border-radius: 999px;
   background: var(--navy);
@@ -99,6 +133,7 @@
   font-family: "Poppins", sans-serif;
   font-size: 14px;
   font-weight: 600;
+  line-height: 1.4;
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
@@ -115,7 +150,20 @@
 }
 
 @media (max-width: 620px) {
-  .trigger { padding: 18px 18px; }
-  .panel { padding: 0 18px; }
-  .question { font-size: 16px; }
+  .trigger { gap: 16px; padding: 22px 0; }
+  .question { font-size: 16.5px; }
+  .icon { width: 22px; height: 22px; }
+  .panelInner { padding: 0 0 26px; }
+  .cta { padding: 12px 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .panel[data-open="true"],
+  .question,
+  .icon,
+  .cta { transition: none; }
+
+  .item:target .question { animation: none; }
+  .cta:hover { transform: none; }
 }

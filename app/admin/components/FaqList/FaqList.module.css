@@ -1,0 +1,15 @@
+/* What only the question list has; the rest is in AdminList.module.css. */
+
+/* No thumbnail at the start of the row, so the text gets the same inset as the right side. */
+a.item { padding-left: 16px; }
+
+.flags {
+  display: flex;
+  gap: 6px;
+}
+
+.flags:empty { display: none; }
+
+@media (max-width: 600px) {
+  .flagLabel { display: none; }
+}

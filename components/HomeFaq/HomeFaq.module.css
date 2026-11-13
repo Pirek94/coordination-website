@@ -1,0 +1,151 @@
+/* The last section before the footer: white, so it parts from the paper of
+   the newest post above it and the hairlines between questions stay crisp,
+   and the navy footer closes it off. */
+.section {
+  padding: clamp(64px, 8vw, 112px) clamp(16px, 5vw, 72px);
+  color: var(--navy);
+  background: #fff;
+}
+
+/* Heading on the left, questions on the right, as on /faq. */
+.inner {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: start;
+  width: min(1160px, 100%);
+  margin: 0 auto;
+}
+
+.intro { min-width: 0; }
+
+.title {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(32px, 3.8vw, 48px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 40ch;
+  margin: 20px 0 0;
+  color: var(--muted);
+  font-size: 16.5px;
+  line-height: 1.65;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+  margin-top: 30px;
+}
+
+.list { min-width: 0; }
+
+/* Rows as tall as the closed questions they stand in for, between the same
+   hairlines, so nothing jumps when the questions come. */
+.skeleton {
+  border-bottom: 1px solid #d4dce4;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  height: 89px;
+  border-top: 1px solid #d4dce4;
+}
+
+.bar {
+  width: 70%;
+  height: 14px;
+  border-radius: 7px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) 100%) -200% 0 / 50% 100% no-repeat,
+    #eef1f4;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.row:nth-child(even) .bar { width: 55%; }
+
+@keyframes shimmer {
+  to { background-position: 300% 0, 0 0; }
+}
+
+.invite {
+  margin: 0;
+  padding: 30px 0;
+  border-top: 1px solid #d4dce4;
+  border-bottom: 1px solid #d4dce4;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.all {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 24px;
+  border-radius: 999px;
+  color: #f2f7fc;
+  background: var(--navy);
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.all:hover {
+  transform: translateY(-2px);
+  background: #0a2f50;
+}
+
+/* The secondary one: the same pill in white, its border taking the place of the padding it covers. */
+.ask {
+  display: inline-flex;
+  align-items: center;
+  padding: 11.5px 22.5px;
+  border: 1.5px solid var(--navy);
+  border-radius: 999px;
+  color: var(--navy);
+  background: #fff;
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.ask:hover {
+  transform: translateY(-2px);
+  background: var(--soft);
+}
+
+.all:focus-visible,
+.ask:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 4px;
+}
+
+@media (max-width: 900px) {
+  .inner { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+}
+
+@media (max-width: 620px) {
+  .lead { font-size: 16px; }
+  .row { height: 68px; }
+  .bar { height: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar { animation: none; }
+
+  .all,
+  .ask { transition: none; }
+
+  .all:hover,
+  .ask:hover { transform: none; }
+}

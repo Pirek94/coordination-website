@@ -3,11 +3,15 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FileText, LoaderCircle, LogOut, Plus, Search } from "lucide-react";
+import { FileText, LoaderCircle, Plus, Search } from "lucide-react";
 import { row, textBlock } from "@/lib/blog/content";
 import type { Post, PostStatus, PostSummary } from "@/lib/blog/types";
+import { fold } from "@/lib/fold";
+import AdminBar from "../AdminBar/AdminBar";
 import { useAdmin } from "../AdminAuth/AdminAuth";
+import { menuPoint, type MenuPoint } from "../ContextMenu/ContextMenu";
 import PostMenu from "./PostMenu";
+import list from "../AdminList/AdminList.module.css";
 import styles from "./PostList.module.css";
 
 type Filter = "all" | PostStatus;
@@ -20,19 +24,15 @@ const FILTERS: { value: Filter; label: string }[] = [
 
 const dateFormat = new Intl.DateTimeFormat("pl-PL", { day: "numeric", month: "long", year: "numeric" });
 
-/** Lowercase without Polish diacritics, so "zolc" finds "żółć". */
-const fold = (text: string) =>
-  text.toLowerCase().replace(/ł/g, "l").normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
-
 export default function PostList() {
-  const { api, logout } = useAdmin();
+  const { api } = useAdmin();
   const router = useRouter();
   const [posts, setPosts] = useState<PostSummary[] | null>(null);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   const [creating, setCreating] = useState(false);
-  const [menu, setMenu] = useState<{ post: PostSummary; at: { x: number; y: number } } | null>(null);
+  const [menu, setMenu] = useState<{ post: PostSummary; at: MenuPoint } | null>(null);
   const [renaming, setRenaming] = useState<number | null>(null);
   const opener = useRef<HTMLElement | null>(null);
 
@@ -77,12 +77,7 @@ export default function PostList() {
   function openMenu(event: React.MouseEvent<HTMLElement>, post: PostSummary) {
     event.preventDefault();
     opener.current = event.currentTarget;
-
-    // The keyboard menu key reports no pointer position; open by the row then.
-    const box = event.currentTarget.getBoundingClientRect();
-    const fromKeyboard = event.clientX === 0 && event.clientY === 0;
-
-    setMenu({ post, at: fromKeyboard ? { x: box.left + 24, y: box.bottom - 8 } : { x: event.clientX, y: event.clientY } });
+    setMenu({ post, at: menuPoint(event) });
   }
 
   // Focus goes back to the row the menu came from, as with a native menu.
@@ -124,51 +119,37 @@ export default function PostList() {
     status === "all" ? posts?.length ?? 0 : posts?.filter((post) => post.status === status).length ?? 0;
 
   return (
-    <div className={styles.page}>
-      <header className={styles.bar}>
-        <div className={styles.barInner}>
-          <Link href="/admin" className={styles.brand}>
-            <img src="/assets/logo.svg" alt="" width={28} height={28} />
-            <span className={styles.brandName}>
-              Coordination
-              <span className={styles.brandTag}>admin</span>
-            </span>
-          </Link>
-          <button className={styles.ghost} type="button" onClick={logout}>
-            <LogOut size={16} aria-hidden="true" />
-            Wyloguj
-          </button>
-        </div>
-      </header>
+    <div className={list.page}>
+      <AdminBar section="posts" />
 
-      <main className={styles.main}>
-        <div className={styles.head}>
+      <main className={list.main}>
+        <div className={list.head}>
           <div>
-            <h1 className={styles.title}>Wpisy na blogu</h1>
+            <h1 className={list.title}>Wpisy na blogu</h1>
           </div>
-          <button className={styles.primary} type="button" onClick={createPost} disabled={creating}>
+          <button className={list.primary} type="button" onClick={createPost} disabled={creating}>
             <Plus size={18} aria-hidden="true" />
             {creating ? "Tworzenie…" : "Nowy wpis"}
           </button>
         </div>
 
-        <div className={styles.tools}>
-          <div className={styles.filters} role="tablist" aria-label="Status wpisów">
+        <div className={list.tools}>
+          <div className={list.filters} role="tablist" aria-label="Status wpisów">
             {FILTERS.map((item) => (
               <button
                 key={item.value}
                 type="button"
                 role="tab"
                 aria-selected={filter === item.value}
-                className={styles.filter}
+                className={list.filter}
                 onClick={() => setFilter(item.value)}
               >
                 {item.label}
-                <span className={styles.count}>{count(item.value)}</span>
+                <span className={list.count}>{count(item.value)}</span>
               </button>
             ))}
           </div>
-          <label className={styles.search}>
+          <label className={list.search}>
             <Search size={16} aria-hidden="true" />
             <input
               type="search"
@@ -181,30 +162,30 @@ export default function PostList() {
         </div>
 
         {error && (
-          <p className={styles.error} role="alert">
+          <p className={list.error} role="alert">
             {error}
           </p>
         )}
 
         {posts === null && !error ? (
-          <div className={styles.empty}>
-            <LoaderCircle className={styles.spinner} aria-hidden="true" />
+          <div className={list.empty}>
+            <LoaderCircle className={list.spinner} aria-hidden="true" />
             Wczytywanie wpisów…
           </div>
         ) : visible.length === 0 ? (
-          <div className={styles.empty}>
+          <div className={list.empty}>
             <FileText size={28} aria-hidden="true" />
             {posts?.length ? "Żaden wpis nie pasuje do wyszukiwania." : "Nie ma jeszcze żadnych wpisów."}
           </div>
         ) : (
-          <ul className={styles.list}>
+          <ul className={list.list}>
             {visible.map((post) => {
               const parts = (
                 <>
                   <span className={styles.thumb}>
                     {post.cover ? <img src={post.cover.src} alt="" loading="lazy" /> : <FileText size={20} aria-hidden="true" />}
                   </span>
-                  <span className={styles.body}>
+                  <span className={list.body}>
                     {renaming === post.id ? (
                       <RenameField
                         title={post.title}
@@ -214,15 +195,15 @@ export default function PostList() {
                         }}
                       />
                     ) : (
-                      <span className={styles.itemTitle}>{post.title}</span>
+                      <span className={list.itemTitle}>{post.title}</span>
                     )}
-                    <span className={styles.meta}>
+                    <span className={list.meta}>
                       /{post.slug}
                       {post.categories.length > 0 && <> · {post.categories.join(", ")}</>}
                     </span>
                   </span>
-                  <span className={styles.side}>
-                    <span className={post.status === "publish" ? styles.published : styles.draft}>
+                  <span className={list.side}>
+                    <span className={post.status === "publish" ? list.published : list.draft}>
                       {post.status === "publish" ? "Opublikowany" : "Szkic"}
                     </span>
                     {post.publishedAt && <time dateTime={post.publishedAt}>{dateFormat.format(new Date(post.publishedAt))}</time>}
@@ -233,13 +214,13 @@ export default function PostList() {
               return (
                 <li key={post.id}>
                   {renaming === post.id ? (
-                    <div className={styles.item} data-active>
+                    <div className={list.item} data-active>
                       {parts}
                     </div>
                   ) : (
                     <Link
                       href={`/admin/posts/${post.id}`}
-                      className={styles.item}
+                      className={list.item}
                       data-active={menu?.post.id === post.id || undefined}
                       onContextMenu={(event) => openMenu(event, post)}
                     >
@@ -258,6 +239,7 @@ export default function PostList() {
           post={menu.post}
           at={menu.at}
           onClose={closeMenu}
+          onOpen={() => router.push(`/admin/posts/${menu.post.id}`)}
           onRename={() => setRenaming(menu.post.id)}
           onToggleStatus={() => change(menu.post, { status: menu.post.status === "publish" ? "draft" : "publish" })}
           onDelete={() => remove(menu.post)}

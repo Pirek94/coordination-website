@@ -3,7 +3,7 @@ import type { PostStatus, PostSummary } from "@/lib/blog/types";
 
 /**
  * How posts are stored and read back. Shared by `lib/blog/posts.ts` and the
- * Worker entry (`worker.ts`), which answers /api/latest-post without starting
+ * Worker entry (`worker.ts`), which answers /api/home without starting
  * Next.js, so this file imports nothing at runtime.
  */
 

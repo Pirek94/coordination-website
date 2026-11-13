@@ -1,11 +1,11 @@
 import { layoutParts, type Block, type PostContent } from "@/lib/blog/content";
 import { PodcastPlayer, VideoEmbed } from "@/components/Embed/Embed";
+import HtmlText from "@/components/HtmlText/HtmlText";
 import styles from "./PostBody.module.css";
 
 /**
  * A post body from the admin editor: rows of columns holding text, image,
- * YouTube and podcast blocks. Text blocks are HTML written in the editor, which only an admin can
- * save, so it is rendered as it is.
+ * YouTube and podcast blocks. Text blocks are rendered by HtmlText.
  */
 export default function PostBody({ content }: { content: PostContent }) {
   let firstImage = true;
@@ -46,7 +46,7 @@ export default function PostBody({ content }: { content: PostContent }) {
 
 function BlockView({ block, eager }: { block: Block; eager: boolean }) {
   if (block.type === "text") {
-    return block.html ? <div className={styles.text} dangerouslySetInnerHTML={{ __html: prepare(block.html) }} /> : null;
+    return <HtmlText html={block.html} />;
   }
 
   if (block.type === "video") return <VideoEmbed url={block.url} />;
@@ -75,14 +75,4 @@ function BlockView({ block, eager }: { block: Block; eager: boolean }) {
       {image}
     </a>
   );
-}
-
-/** Wide tables scroll sideways instead of stretching the page; new-tab links get rel="noopener". */
-function prepare(html: string) {
-  return html
-    .replace(/<table/g, `<div class="${styles.tableWrap}"><table`)
-    .replace(/<\/table>/g, "</table></div>")
-    .replace(/<a ([^>]*target="_blank"[^>]*)>/g, (tag, attributes: string) =>
-      attributes.includes("rel=") ? tag : `<a ${attributes} rel="noopener noreferrer">`,
-    );
 }

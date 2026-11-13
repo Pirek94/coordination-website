@@ -231,8 +231,8 @@ export async function listPublishedPosts(page: number, perPage: number, section:
 }
 
 /**
- * The newest visible post, for /api/latest-post under `next dev`. On
- * Cloudflare worker.ts answers that route with the same query.
+ * The newest visible post, for /api/home under `next dev`. On Cloudflare
+ * worker.ts answers that route with the same query.
  */
 export async function getLatestPublishedPost(): Promise<PostSummary | null> {
   const db = await getDb();

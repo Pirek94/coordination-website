@@ -11,10 +11,12 @@ import FirmFinder from "@/components/FirmFinder/FirmFinder";
 import HelpFinder from "@/components/HelpFinder/HelpFinder";
 import ProcessTimeline from "@/components/ProcessTimeline/ProcessTimeline";
 import ReadinessPaths from "@/components/ReadinessPaths/ReadinessPaths";
+import HomeFaq from "@/components/HomeFaq/HomeFaq";
 
 // Static: rendering this page per request cost ~35 ms of CPU against the free
-// Workers plan's 10 ms. The newest post, its only changing part, is fetched by
-// the browser (see LatestPost).
+// Workers plan's 10 ms. Its changing parts, the newest post and the first FAQ
+// answers, are fetched by the browser in one request to /api/home
+// (lib/home-feed.ts, used by LatestPost and HomeFaq).
 export default function Home() {
   return (
     <>
@@ -31,6 +33,7 @@ export default function Home() {
         <ReadinessPaths />
         <ContactMail />
         <LatestPost />
+        <HomeFaq />
       </main>
       <Footer />
     </>

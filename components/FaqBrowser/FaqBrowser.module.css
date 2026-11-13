@@ -1,0 +1,214 @@
+.browser {
+  display: flex;
+  flex-direction: column;
+}
+
+.tools {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+/* A line to write on rather than a box, like the rows under it. */
+.search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 54px;
+  border-bottom: 1.5px solid var(--navy);
+  color: var(--muted);
+  transition: border-color 150ms ease;
+}
+
+.search:focus-within {
+  border-bottom-color: var(--orange);
+  color: var(--navy);
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  color: var(--navy);
+  background: transparent;
+  font-size: 16px;
+  outline: none;
+}
+
+.search input::placeholder { color: #9aa7b6; }
+
+/* The browser's own clear button would sit next to ours. */
+.search input::-webkit-search-cancel-button { display: none; }
+
+.clear {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  place-items: center;
+  border: 0;
+  border-radius: 10px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.clear:hover { color: var(--navy); background: var(--soft); }
+
+.clear:focus-visible,
+.chip:focus-visible,
+.nothingLink:focus-visible,
+.nothingReset:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 6px 14px;
+  border: 1px solid #d4dce4;
+  border-radius: 999px;
+  color: var(--navy);
+  background: transparent;
+  font-family: "Poppins", sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+.chip:hover { border-color: var(--navy); }
+
+.chip[aria-pressed="true"] {
+  border-color: var(--navy);
+  color: #fff;
+  background: var(--navy);
+}
+
+/* Under the search the line it writes on already opens the list, so the rows
+   keep a line under each instead of over each, and none sits under that one. */
+.underTools > div { border-bottom: 0; }
+.underTools > div > div { border-top: 0; border-bottom: 1px solid #d4dce4; }
+
+/* Under the rows, for the next page of them. */
+.more {
+  display: inline-flex;
+  align-self: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+  padding: 11px 22px;
+  border: 1.5px solid var(--navy);
+  border-radius: 999px;
+  color: var(--navy);
+  background: transparent;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.more:hover { color: #fff; background: var(--navy); }
+
+.more:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+.status {
+  min-height: 1.6em;
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.status:empty { min-height: 0; margin: 0; }
+
+/* With every row filtered out, this takes their place between the same hairlines. */
+.nothing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 30px 0;
+  border-top: 1px solid #d4dce4;
+  border-bottom: 1px solid #d4dce4;
+}
+
+.nothingIcon {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 4px;
+  color: var(--orange);
+  stroke-width: 1.5;
+}
+
+.nothingTitle {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.nothingText {
+  max-width: 44ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.nothingActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  margin-top: 12px;
+}
+
+.nothingLink {
+  padding: 11px 22px;
+  border-radius: 999px;
+  color: #f2f7fc;
+  background: var(--navy);
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.nothingLink:hover { background: #0a2f50; }
+
+.nothingReset {
+  padding: 11px 4px;
+  border: 0;
+  color: var(--navy);
+  background: transparent;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  cursor: pointer;
+}
+
+.nothingReset:hover { color: var(--orange); }
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
