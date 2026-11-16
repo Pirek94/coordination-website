@@ -12,12 +12,31 @@ import styles from "./HelpFinder.module.css";
 /** From this many signals on, the firm reads as one that works, but works too hard. */
 const MANY = 3;
 
+type HelpFinderProps = {
+  title?: string;
+  intro?: string;
+  /** The section's anchor. */
+  id?: string;
+  /**
+   * Set where the area cards are on the same page (/wsparcie): the answer then
+   * points to its own card above, and the talk to the contact form on the home
+   * page.
+   */
+  areaAnchors?: boolean;
+};
+
 /**
  * "W czym pomagamy właścicielom małych firm" as a short self-check: the
  * visitor ticks what they recognise in their firm, the areas that answer it
- * light up, and the strongest one is shown as where we would start.
+ * light up, and the strongest one is shown as where we would start. On the
+ * home page as is; /wsparcie gives it its own heading.
  */
-export default function HelpFinder() {
+export default function HelpFinder({
+  title: heading = "W czym pomagamy właścicielom małych firm",
+  intro = "Zaznacz to, co rozpoznajesz w swojej firmie. Pokażemy, od którego obszaru byśmy zaczęli pracę.",
+  id: anchor = "obszary-wsparcia",
+  areaAnchors = false,
+}: HelpFinderProps) {
   // In the order they were ticked, so a tie goes to the newest one.
   const [picked, setPicked] = useState<string[]>([]);
   const id = useId();
@@ -85,11 +104,9 @@ export default function HelpFinder() {
     );
 
   return (
-    <section className={styles.section} id="obszary-wsparcia">
+    <section className={styles.section} id={anchor}>
       <div className={styles.inner}>
-        <SectionIntro title="W czym pomagamy właścicielom małych firm">
-          Zaznacz to, co rozpoznajesz w swojej firmie. Pokażemy, od którego obszaru byśmy zaczęli pracę.
-        </SectionIntro>
+        <SectionIntro title={heading}>{intro}</SectionIntro>
 
         <div className={styles.board}>
           <div className={styles.check}>
@@ -166,10 +183,16 @@ export default function HelpFinder() {
                     </p>
                   )}
                   <div className={styles.actions}>
-                    <CtaButton href="#kontakt">Porozmawiajmy o tym</CtaButton>
-                    <Link className={styles.more} href="/wsparcie">
-                      Wszystkie obszary wsparcia
-                    </Link>
+                    <CtaButton href={areaAnchors ? "/#kontakt" : "#kontakt"}>Porozmawiajmy o tym</CtaButton>
+                    {areaAnchors ? (
+                      <a className={styles.more} href={`#${top.id}`}>
+                        Przejdź do tego obszaru na liście
+                      </a>
+                    ) : (
+                      <Link className={styles.more} href="/wsparcie">
+                        Wszystkie obszary wsparcia
+                      </Link>
+                    )}
                   </div>
                 </div>
               ) : (

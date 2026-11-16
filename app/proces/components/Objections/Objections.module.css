@@ -1,0 +1,244 @@
+/* Wide: the bubbles run down the left column and the open answer takes the
+   right one beside all of them. Each entry is only a wrapper for the grid to
+   see through, so on narrow screens the answer falls straight under its own
+   bubble without a second copy in the markup. The last, flexible row soaks up
+   an answer taller than the list, so the bubbles keep their spacing. */
+.board {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  grid-template-rows: repeat(6, auto) 1fr;
+  column-gap: clamp(24px, 4vw, 48px);
+  row-gap: 12px;
+  width: min(1080px, 100%);
+  margin: 0 auto;
+}
+
+.entry {
+  display: contents;
+}
+
+/* ---------- the objections, as speech bubbles ---------- */
+
+.bubble {
+  position: relative;
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 56px;
+  padding: 15px 22px;
+  border: 1px solid #dce2e8;
+  border-radius: 22px 22px 22px 6px;
+  color: var(--navy);
+  background: #fff;
+  box-shadow: 0 8px 20px -16px rgba(1, 33, 65, 0.3);
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.bubble:hover {
+  border-color: #b6c3d0;
+  transform: translateX(3px);
+}
+
+.bubble:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+}
+
+.bubble[aria-expanded="true"] {
+  border-color: var(--navy);
+  color: #fff;
+  background: var(--navy);
+  box-shadow: 0 16px 30px -18px rgba(1, 33, 65, 0.6);
+  transform: none;
+}
+
+/* The open bubble points at its answer across the gap. */
+.bubble[aria-expanded="true"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 0 3px 0 0;
+  background: var(--navy);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.quote {
+  min-width: 0;
+}
+
+/* ---------- the answer ---------- */
+
+.answer {
+  grid-column: 2;
+  grid-row: 1 / -1;
+  align-self: start;
+  position: sticky;
+  top: calc(var(--site-nav-height, 0px) + 24px);
+  padding: clamp(24px, 3.4vw, 40px);
+  border: 1px solid #dce2e8;
+  border-top: 3px solid var(--orange);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 24px 60px -36px rgba(1, 33, 65, 0.3);
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  color: var(--orange);
+  font-family: "Poppins", sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.label svg {
+  width: 17px;
+  height: 17px;
+}
+
+.answerQuote {
+  margin: 0 0 14px;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(20px, 2.2vw, 25px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: var(--navy);
+}
+
+.answerText {
+  margin: 0;
+  color: #414c5a;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* Inline, so on a narrow card the arrow wraps with the last word. */
+.more {
+  display: inline-block;
+  margin-top: 20px;
+  color: var(--navy);
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(1, 33, 65, 0.3);
+  text-underline-offset: 5px;
+  transition: color 0.15s ease;
+}
+
+.more svg {
+  display: inline-block;
+  width: 17px;
+  height: 17px;
+  margin-left: 6px;
+  vertical-align: -3px;
+  transition: transform 0.2s ease;
+}
+
+.more:hover {
+  color: var(--orange);
+  text-decoration-color: currentColor;
+}
+
+.more:hover svg {
+  transform: translateX(3px);
+}
+
+.board[data-armed] .answer:not([hidden]) > * {
+  animation: answer-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.board[data-armed] .answer:not([hidden]) > :nth-child(2) { animation-delay: 0.04s; }
+.board[data-armed] .answer:not([hidden]) > :nth-child(3) { animation-delay: 0.08s; }
+.board[data-armed] .answer:not([hidden]) > :nth-child(4) { animation-delay: 0.12s; }
+
+@keyframes answer-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- narrow: an accordion, the answer under its bubble ---------- */
+
+@media (max-width: 900px) {
+  .board {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    width: min(680px, 100%);
+  }
+
+  .bubble,
+  .answer {
+    grid-column: 1;
+  }
+
+  .answer {
+    grid-row: auto;
+    position: static;
+    margin: 0 0 8px 14px;
+  }
+
+  /* The bubble now points down at the answer under it. */
+  .bubble[aria-expanded="true"]::after {
+    top: auto;
+    right: auto;
+    bottom: -7px;
+    left: 28px;
+    border-radius: 0 0 3px 0;
+    transform: rotate(45deg);
+  }
+
+  /* The quote is the bubble right above; no need to say it twice. */
+  .answerQuote {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  .bubble {
+    font-size: 15px;
+    padding: 14px 18px;
+  }
+
+  .answer {
+    margin-left: 0;
+    padding: 22px 20px;
+  }
+
+  .answerText {
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble,
+  .more svg {
+    transition: none;
+  }
+
+  .bubble:hover,
+  .more:hover svg {
+    transform: none;
+  }
+}

@@ -6,8 +6,9 @@ import { SITUATIONS } from "@/lib/content/situations";
 import styles from "./AfterChange.module.css";
 
 /**
- * „Co ma się zmienić po doradztwie?”: the situations from the top of the page,
- * each set against how it should look once the work has landed. As a row
+ * The situations owners come with, each set against how it should look once
+ * the work has landed: „Co ma się zmienić po doradztwie?” at /dla-kogo and
+ * „Co konkretnie zmienia się w firmie?” at /wsparcie. As a row
  * scrolls into view, the old state is struck through and the new one settles
  * in beside it.
  */

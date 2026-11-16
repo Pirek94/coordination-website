@@ -16,11 +16,18 @@
   background: var(--paper);
 }
 
-/* ---------- section 2: doradztwo ---------- */
+/* ---------- section 2: situations (rendered by SituationStarts) ---------- */
+
+.situationsSection {
+  padding: clamp(48px, 6vw, 80px) 24px;
+  background: linear-gradient(180deg, #edf0f3, #f5f6f8);
+}
+
+/* ---------- section 3: doradztwo ---------- */
 
 .doradztwoSection {
   padding: clamp(48px, 6vw, 80px) 24px;
-  background: linear-gradient(180deg, #edf0f3, #f5f6f8);
+  background: var(--paper);
 }
 
 .closingNote {
@@ -32,11 +39,11 @@
   line-height: 1.7;
 }
 
-/* ---------- section 3: steps ---------- */
+/* ---------- section 4: steps ---------- */
 
 .stepsSection {
   padding: clamp(48px, 6vw, 80px) 24px;
-  background: var(--paper);
+  background: linear-gradient(180deg, #edf0f3, #f5f6f8);
 }
 
 .stepsContainer {
@@ -102,6 +109,43 @@
   line-height: 1.7;
 }
 
+/* ---------- section 5: what happens (rendered by CollaborationViews) ---------- */
+
+.happensSection {
+  padding: clamp(48px, 6vw, 80px) 24px;
+  background: var(--paper);
+}
+
+/* ---------- section 6: objections (rendered by Objections) ---------- */
+
+.objectionsSection {
+  padding: clamp(48px, 6vw, 80px) 24px;
+  background: linear-gradient(180deg, #edf0f3, #f5f6f8);
+}
+
+.otherQuestion {
+  max-width: 760px;
+  margin: 40px auto 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.inlineLink {
+  color: var(--navy);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(1, 33, 65, 0.3);
+  text-underline-offset: 4px;
+  transition: color 0.15s ease;
+}
+
+.inlineLink:hover {
+  color: var(--orange);
+  text-decoration-color: currentColor;
+}
+
 /* ---------- CTA ---------- */
 
 .ctaSection {
@@ -161,7 +205,8 @@
     font-size: 19px;
   }
 
-  .closingNote {
+  .closingNote,
+  .otherQuestion {
     margin-top: 28px;
     font-size: 15px;
   }

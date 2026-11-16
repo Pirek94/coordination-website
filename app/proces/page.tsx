@@ -4,11 +4,14 @@ import ContactMail from "@/components/ContactMail/ContactMail";
 import SubpageHeader from "@/components/SubpageHeader/SubpageHeader";
 import SectionIntro from "@/components/SectionIntro/SectionIntro";
 import PhasePipeline from "@/components/PhasePipeline/PhasePipeline";
+import Link from "next/link";
 import Checklist, { type ChecklistEntry } from "@/components/Checklist/Checklist";
-import CtaButton from "@/components/CtaButton/CtaButton";
 import Footer from "@/components/Footer/Footer";
 import SiteNav from "@/components/SiteNav/SiteNav";
 import { PROCESS_STEPS, stepNumber } from "@/lib/content/process";
+import SituationStarts from "./components/SituationStarts/SituationStarts";
+import CollaborationViews from "./components/CollaborationViews/CollaborationViews";
+import Objections from "./components/Objections/Objections";
 import styles from "./proces.module.css";
 
 export const metadata: Metadata = {
@@ -71,6 +74,17 @@ export default function ProcesPage() {
         </div>
       </section>
 
+      <section className={styles.situationsSection}>
+        <div className={styles.container}>
+          <div className={styles.intro}>
+            <SectionIntro title="Z takimi sytuacjami pracujemy najczęściej">
+              Proces jest zawsze ten sam, ale punkt wyjścia zależy od tego, co dziś najbardziej uwiera Twoją firmę. Przy każdej sytuacji widać obszary, od których zaczynamy pracę.
+            </SectionIntro>
+          </div>
+          <SituationStarts />
+        </div>
+      </section>
+
       <section className={styles.doradztwoSection}>
         <div className={styles.container}>
           <div className={styles.intro}>
@@ -85,7 +99,7 @@ export default function ProcesPage() {
         </div>
       </section>
 
-      <section className={styles.stepsSection}>
+      <section className={styles.stepsSection} id="proces-pracy">
         <div className={styles.stepsContainer}>
           <div className={styles.intro}>
             <SectionIntro title="Jak wygląda proces pracy z nami?" />
@@ -103,6 +117,35 @@ export default function ProcesPage() {
               </li>
             ))}
           </ol>
+        </div>
+      </section>
+
+      <section className={styles.happensSection} id="co-sie-wydarzy">
+        <div className={styles.container}>
+          <div className={styles.intro}>
+            <SectionIntro title="Co się wydarzy podczas współpracy?">
+              Etapy pokazują, jak układa się praca. Tu widać, co konkretnie dzieje się z Twojej perspektywy - na spotkaniach, między nimi i w samej firmie.
+            </SectionIntro>
+          </div>
+          <CollaborationViews />
+        </div>
+      </section>
+
+      <section className={styles.objectionsSection}>
+        <div className={styles.container}>
+          <div className={styles.intro}>
+            <SectionIntro title="Jakie masz obiekcje?">
+              Zanim umówisz się na rozmowę, pewnie masz kilka wątpliwości. Oto te, które słyszymy najczęściej, i nasze odpowiedzi - bez owijania w bawełnę.
+            </SectionIntro>
+          </div>
+          <Objections />
+          <p className={styles.otherQuestion}>
+            Masz inne pytanie? Zajrzyj do{" "}
+            <Link className={styles.inlineLink} href="/faq">
+              najczęściej zadawanych pytań
+            </Link>{" "}
+            albo napisz do nas poniżej.
+          </p>
         </div>
       </section>
 

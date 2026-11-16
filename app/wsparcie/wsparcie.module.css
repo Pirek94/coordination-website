@@ -29,6 +29,87 @@
 
 .areasSection {
   padding: clamp(48px, 6vw, 80px) 24px;
+  background: linear-gradient(180deg, #edf0f3, #f5f6f8);
+}
+
+/* Closes the grid of fourteen: the fifteenth place, on the brand's navy, is
+   the way into the self-check below. Where the grid runs in two columns it
+   would stand alone, so there it takes the whole row. */
+.startCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding: 28px;
+  border-radius: 18px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(242, 121, 45, 0.28), transparent 55%),
+    var(--navy);
+  box-shadow: 0 18px 36px -22px rgba(1, 33, 65, 0.6);
+}
+
+.startTitle {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.startText {
+  margin: 0;
+  color: #c1cddd;
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+.startLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 11px 18px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--orange);
+  font-family: "Poppins", sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  transition: background-color 0.15s ease, transform 0.2s ease;
+}
+
+.startLink svg {
+  width: 17px;
+  height: 17px;
+}
+
+.startLink:hover {
+  background: #e4631c;
+  transform: translateY(-1px);
+}
+
+.startLink:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+/* ---------- connections (rendered by ConnectionMap) ---------- */
+
+.connectionsSection {
+  padding: clamp(56px, 7vw, 104px) 24px;
+  color: #fff;
+  background:
+    radial-gradient(ellipse 60% 50% at 25% 60%, rgba(242, 121, 45, 0.08), transparent 70%),
+    var(--navy);
+}
+
+/* ---------- what changes (rendered by AfterChange) ---------- */
+
+.afterSection {
+  padding: clamp(48px, 6vw, 80px) 24px;
   background: var(--paper);
 }
 
@@ -76,5 +157,21 @@
 
   .leadText {
     font-size: 16px;
+  }
+
+  .startCard {
+    padding: 22px;
+  }
+}
+
+@media (min-width: 621px) and (max-width: 900px) {
+  .startCard {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .startLink:hover {
+    transform: none;
   }
 }
