@@ -4,12 +4,12 @@ import SectionIntro from "@/components/SectionIntro/SectionIntro";
 import ContactMail from "@/components/ContactMail/ContactMail";
 import Footer from "@/components/Footer/Footer";
 import SiteNav from "@/components/SiteNav/SiteNav";
+import AfterChange from "@/components/AfterChange/AfterChange";
 import SituationCards from "./components/SituationCards/SituationCards";
 import StageMatrix from "./components/StageMatrix/StageMatrix";
 import NotForYou from "./components/NotForYou/NotForYou";
 import FirmTypes from "./components/FirmTypes/FirmTypes";
 import Approach from "./components/Approach/Approach";
-import AfterChange from "./components/AfterChange/AfterChange";
 import styles from "./dla-kogo.module.css";
 
 export const metadata: Metadata = {
