@@ -1,0 +1,213 @@
+/* The room the card is scrolled through. Only when the scroll drives it does
+   the runway open, by about a third of the screen for every row. */
+.track[data-armed] .runway {
+  height: calc(var(--rows, 4) * 34vh);
+}
+
+.shell {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: clamp(28px, 3.6vw, 48px) clamp(28px, 4vw, 56px);
+  border: 1px solid #dce2e8;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 8px 24px -16px rgba(1, 33, 65, 0.16);
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: center;
+  column-gap: 112px;
+  padding: clamp(18px, 2.6vh, 28px) 0;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.item:last-child {
+  border-bottom: 0;
+}
+
+.situation {
+  margin: 0;
+  color: var(--navy);
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(18px, 1.7vw, 23px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+  transition: opacity 0.35s ease, color 0.35s ease;
+}
+
+/* The answer, with the arrow that uncovers it riding just ahead of the edge. */
+.answer {
+  position: relative;
+}
+
+/* Just the arrow, big and heavy, in the brand's orange. */
+.arrow {
+  position: absolute;
+  top: 50%;
+  /* Centred in the 112px between the two texts. */
+  left: -82px;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  color: var(--orange);
+  translate: 0 -50%;
+}
+
+.arrow svg {
+  width: 52px;
+  height: 52px;
+}
+
+.redirect {
+  margin: 0;
+  color: #4d5866;
+  font-size: clamp(16px, 1.35vw, 18px);
+  line-height: 1.6;
+}
+
+/* ---------- driven by the scroll ---------- */
+
+/* Still to come: dimmed, its answer not yet there. */
+.track[data-armed] .item[data-stage="waiting"] .situation {
+  opacity: 0.28;
+}
+
+/* Only the scroll moves this one, so it is there only while the scroll drives. */
+.flight {
+  display: none;
+}
+
+/* It grows in between the texts, then crosses the answer and fades past its
+   end. What is uncovered ends a little behind its tip, softly, and takes in
+   the whole text by the time it goes. */
+.track[data-armed] .flight {
+  display: grid;
+  left: calc(var(--across, 1) * (100% + 84px) - 82px);
+  opacity: calc(var(--appear, 1) * (1 - clamp(0, (var(--across, 1) - 0.8) / 0.2, 1)));
+  scale: calc(0.5 + 0.5 * var(--appear, 1));
+}
+
+/* The arrow between the texts waits out the flight, then slides slowly back
+   in; scrolling back up takes it away again at once. */
+.track[data-armed] .arrow:not(.flight) {
+  opacity: 0;
+  translate: -14px -50%;
+}
+
+.track[data-armed] .item[data-stage="done"] .arrow:not(.flight) {
+  opacity: 1;
+  translate: 0 -50%;
+  transition:
+    opacity 0.9s ease 0.15s,
+    translate 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+}
+
+.track[data-armed] .redirect {
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    #000 calc(var(--across, 1) * (100% + 84px) - 84px),
+    transparent calc(var(--across, 1) * (100% + 84px) - 44px)
+  );
+  mask-image: linear-gradient(
+    90deg,
+    #000 calc(var(--across, 1) * (100% + 84px) - 84px),
+    transparent calc(var(--across, 1) * (100% + 84px) - 44px)
+  );
+}
+
+.note {
+  max-width: 64ch;
+  margin: clamp(16px, 2.4vh, 28px) auto 0;
+  color: var(--muted);
+  font-size: 15px;
+  font-style: italic;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* The closing note, held back until the last answer is given. */
+.track[data-armed] .note {
+  opacity: 0;
+  translate: 0 10px;
+  transition:
+    opacity 0.3s ease,
+    translate 0.3s ease;
+}
+
+.track[data-armed][data-complete] .note {
+  opacity: 1;
+  translate: none;
+  transition:
+    opacity 0.8s ease 0.35s,
+    translate 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.35s;
+}
+
+/* ---------- dense: a longer list, so it still fits under the bar ---------- */
+
+.track[data-dense] .item {
+  padding: clamp(11px, 1.6vh, 16px) 0;
+}
+
+.track[data-dense] .situation {
+  font-size: clamp(17px, 1.45vw, 20px);
+  line-height: 1.3;
+}
+
+.track[data-dense] .redirect {
+  font-size: clamp(15px, 1.15vw, 16.5px);
+  line-height: 1.5;
+}
+
+/* ---------- one column: the plain list ---------- */
+
+@media (max-width: 720px) {
+  .item {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 12px;
+    padding: 18px 0;
+  }
+
+  .answer {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .arrow {
+    position: static;
+    flex: none;
+    width: 30px;
+    height: 30px;
+    translate: none;
+    rotate: 90deg;
+  }
+
+  .arrow svg {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 620px) {
+  .shell {
+    padding: 24px;
+  }
+
+  .situation {
+    font-size: 18px;
+  }
+
+  .redirect {
+    font-size: 15.5px;
+  }
+}

@@ -1,16 +1,20 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
-import { ArrowDown } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CLUSTERS, type ClusterId } from "@/lib/content/connections";
 import { SUPPORT_AREAS } from "@/lib/content/support";
 import styles from "./ConnectionMap.module.css";
 
-/** How long each part stays lit while the map shows itself around. */
+/**
+ * How long each part stays lit while the map shows itself around. The panel's
+ * progress bar runs for this long and moves the map on when it ends, so a
+ * pause (a hover, the map scrolled away) holds the bar where it is.
+ */
 const AUTO_STEP_MS = 5500;
 
 const AREAS = new Map(SUPPORT_AREAS.map((area) => [area.id, area]));
-const LABELS = new Map(CLUSTERS.map((cluster) => [cluster.id, cluster.label]));
+const BY_ID = new Map(CLUSTERS.map((cluster) => [cluster.id, cluster]));
 
 /** Where each part sits on the ring, in the diagram's 0-100 box. */
 const POINTS = new Map(
@@ -58,11 +62,13 @@ const EDGES = [
  * „Jak łączymy poszczególne obszary?”: the firm as six parts on a ring, with
  * a line wherever a decision in one shows up in another. Picking a part lights
  * its lines in orange, step by step, and the panel beside the ring follows
- * each of its decisions to where it lands. Until the visitor touches it, the
- * map walks round the ring by itself; the first touch stops that for good.
+ * each of its decisions to where it lands; pointing at one of those decisions
+ * leaves only its own lines lit. Until the visitor touches it, the map walks
+ * round the ring by itself; the first touch stops that for good.
  */
 export default function ConnectionMap() {
   const [active, setActive] = useState(0);
+  const [focus, setFocus] = useState<number | null>(null);
   const [armed, setArmed] = useState(false);
   const [auto, setAuto] = useState(false);
   const [inView, setInView] = useState(false);
@@ -88,15 +94,12 @@ export default function ConnectionMap() {
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (!auto || !inView || hovered) return;
-
-    const timer = window.setTimeout(() => setActive((current) => (current + 1) % CLUSTERS.length), AUTO_STEP_MS);
-
-    return () => window.clearTimeout(timer);
-  }, [auto, inView, hovered, active]);
-
   const stop = () => setAuto(false);
+
+  function select(index: number) {
+    setActive((index + CLUSTERS.length) % CLUSTERS.length);
+    setFocus(null);
+  }
 
   /** Arrow keys walk round the ring, as in any tab list. */
   function onKeyDown(event: KeyboardEvent) {
@@ -109,7 +112,7 @@ export default function ConnectionMap() {
 
     const next = edge ?? (active + step! + CLUSTERS.length) % CLUSTERS.length;
 
-    setActive(next);
+    select(next);
     tabs.current[next]?.focus();
   }
 
@@ -129,6 +132,8 @@ export default function ConnectionMap() {
     >
       <div className={styles.diagram}>
         <svg className={styles.lines} viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+          <circle className={styles.orbit} cx={50} cy={50} r={36} />
+
           {EDGES.map(([from, to]) => (
             <path key={`${from}|${to}`} className={styles.edge} d={link(from, to)} />
           ))}
@@ -142,6 +147,7 @@ export default function ConnectionMap() {
                   className={styles.lit}
                   d={link(chain[hop].cluster, step.cluster)}
                   pathLength={1}
+                  data-faded={focus !== null && focus !== index ? "true" : undefined}
                   style={{ "--delay": `${0.12 * index + 0.4 * hop}s` } as React.CSSProperties}
                 />
               )),
@@ -164,12 +170,6 @@ export default function ConnectionMap() {
           })}
         </svg>
 
-        <span className={styles.hub} aria-hidden="true">
-          Twoja
-          <br />
-          firma
-        </span>
-
         <div className={styles.nodes} role="tablist" aria-label="Części firmy" onKeyDown={onKeyDown}>
           {CLUSTERS.map(({ id: cluster, Icon, label }, index) => {
             const point = POINTS.get(cluster)!;
@@ -188,11 +188,13 @@ export default function ConnectionMap() {
                 tabIndex={index === active ? 0 : -1}
                 className={styles.node}
                 data-state={index === active ? "active" : linked.has(cluster) ? "linked" : "dim"}
-                style={{ "--x": `${point.x}%`, "--y": `${point.y}%` } as React.CSSProperties}
-                onClick={() => setActive(index)}
+                style={{ "--x": `${point.x}%`, "--y": `${point.y}%`, "--i": index } as React.CSSProperties}
+                onClick={() => select(index)}
               >
-                <Icon aria-hidden="true" />
-                <span>{label}</span>
+                <span className={styles.badge}>
+                  <Icon aria-hidden="true" />
+                </span>
+                <span className={styles.nodeLabel}>{label}</span>
               </button>
             );
           })}
@@ -209,40 +211,87 @@ export default function ConnectionMap() {
             hidden={index !== active}
             className={styles.panel}
           >
-            <h3 className={styles.title}>{cluster.label}</h3>
+            {auto && index === active && (
+              <span
+                key={active}
+                className={styles.progress}
+                aria-hidden="true"
+                data-paused={hovered || !inView ? "true" : undefined}
+                style={{ "--step": `${AUTO_STEP_MS}ms` } as React.CSSProperties}
+                onAnimationEnd={() => select(active + 1)}
+              />
+            )}
+
+            <div className={styles.head}>
+              <span className={styles.headIcon} aria-hidden="true">
+                <cluster.Icon />
+              </span>
+              <div className={styles.headText}>
+                <h3 className={styles.title}>{cluster.label}</h3>
+              </div>
+              <div className={styles.pager}>
+                <button
+                  type="button"
+                  className={styles.pagerButton}
+                  aria-label="Poprzednia część firmy"
+                  onClick={() => select(index - 1)}
+                >
+                  <ChevronLeft aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  className={styles.pagerButton}
+                  aria-label="Następna część firmy"
+                  onClick={() => select(index + 1)}
+                >
+                  <ChevronRight aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+
             <p className={styles.summary}>{cluster.summary}</p>
 
-            <p className={styles.label}>Decyzja tutaj, skutek dalej</p>
-            <ul className={styles.chains}>
-              {cluster.chains.map((chain) => (
-                <li key={chain[0].text} className={styles.chain}>
+            <ul className={styles.chains} onPointerLeave={() => setFocus(null)}>
+              {cluster.chains.map((chain, chainIndex) => (
+                <li
+                  key={chain[0].text}
+                  className={styles.chain}
+                  data-focused={focus === chainIndex ? "true" : undefined}
+                  onPointerEnter={() => setFocus(chainIndex)}
+                >
                   <ol className={styles.steps}>
-                    {chain.map((step, hop) => (
-                      <li key={step.text} className={styles.step} data-first={hop === 0 || undefined}>
-                        {hop > 0 && (
-                          <span className={styles.arrow} aria-hidden="true">
-                            <ArrowDown />
-                          </span>
-                        )}
-                        <span className={styles.where}>{LABELS.get(step.cluster)}</span>
-                        <span className={styles.what}>{step.text}</span>
-                      </li>
-                    ))}
+                    {chain.map((step, hop) => {
+                      const where = BY_ID.get(step.cluster)!;
+
+                      return (
+                        <li key={step.text} className={styles.step} data-first={hop === 0 || undefined}>
+                          {hop > 0 && (
+                            <span className={styles.where}>
+                              <where.Icon aria-hidden="true" />
+                              {where.label}
+                            </span>
+                          )}
+                          <span className={styles.what}>{step.text}</span>
+                        </li>
+                      );
+                    })}
                   </ol>
                 </li>
               ))}
             </ul>
 
-            <p className={styles.label}>Obszary wsparcia w tej części</p>
-            <ul className={styles.areas}>
-              {cluster.areas.map((area) => (
-                <li key={area}>
-                  <a className={styles.area} href={`#${area}`}>
-                    {AREAS.get(area)!.short}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <div className={styles.footer}>
+              <p className={styles.label}>Obszary wsparcia w tej części</p>
+              <ul className={styles.areas}>
+                {cluster.areas.map((area) => (
+                  <li key={area}>
+                    <a className={styles.area} href={`#${area}`}>
+                      {AREAS.get(area)!.short}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         ))}
       </div>

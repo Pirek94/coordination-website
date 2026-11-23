@@ -89,12 +89,12 @@ export default function ProcesPage() {
         <div className={styles.container}>
           <div className={styles.intro}>
             <SectionIntro title="Jak zaczyna się doradztwo strategiczne dla małej firmy">
-              Nie zaczynamy od gotowej oferty ani deklaracji długoterminowej współpracy. Najpierw odbywamy trzy bezpłatne spotkania robocze, podczas których analizujemy Twoją firmę, sposób podejmowania decyzji, sprzedaż, ofertę, klientów i miejsca, w których pojawia się utrata marży, czasu lub kontroli.
+              Nie zaczynamy od gotowej oferty ani deklaracji długoterminowej współpracy. Pierwsza rozmowa jest bezpłatna. Potem przeprowadzamy Diagnozę Zarządczą - zazwyczaj 2–3 spotkania, podczas których analizujemy Twoją firmę, sposób podejmowania decyzji, sprzedaż, ofertę, klientów i miejsca, w których pojawia się utrata marży, czasu lub kontroli.
             </SectionIntro>
           </div>
           <Checklist items={checkpoints} />
           <p className={styles.closingNote}>
-            Dopiero po tych spotkaniach podejmujemy decyzję, czy wchodzimy we właściwą współpracę. Jeżeli nie ma dopasowania, nie kontynuujemy.
+            Diagnoza jest samodzielną, płatną usługą (500 zł netto za cały etap) i nie zobowiązuje do dalszej współpracy. Dopiero po niej decydujemy, czy wchodzimy w 90-dniowy Sprint Systemowy. Jeżeli nie ma dopasowania, nie kontynuujemy.
           </p>
         </div>
       </section>

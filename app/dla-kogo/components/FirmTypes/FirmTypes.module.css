@@ -1,49 +1,73 @@
-.grid {
+/* The deck's measures, read by the script too: the room above it for the
+   front cartoon, under the bar, and how far each card behind peeks out. */
+.track {
+  --stick-gap: 104px;
+  --step-y: 20px;
+}
+
+/* ---------- the grid: screens too short for the deck, or motion turned down ---------- */
+
+/* Room above every card for the cartoon on its top edge. */
+.deck {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  gap: 92px 20px;
+  padding-top: 70px;
 }
 
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 32px;
+  padding: 86px 32px 32px;
   border: 1px solid #dce2e8;
-  border-radius: 20px;
+  border-radius: 22px;
   background: #fff;
   box-shadow: 0 8px 24px -16px rgba(1, 33, 65, 0.16);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.card:hover {
-  border-color: #b6c3d0;
-  box-shadow: 0 16px 32px -20px rgba(1, 33, 65, 0.24);
-  transform: translateY(-2px);
+/* The cartoon, in a round medallion centred on the card's top edge. */
+.badge {
+  position: absolute;
+  top: -68px;
+  left: 50%;
+  width: 136px;
+  height: 136px;
+  padding: 8px;
+  overflow: hidden;
+  border: 1px solid #e3e8ee;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #ffffff 0%, #f1f5f9 100%);
+  box-shadow:
+    0 0 0 6px #fff,
+    0 18px 30px -18px rgba(1, 33, 65, 0.45);
+  translate: -50% 0;
 }
 
 .title {
   margin: 0;
+  color: var(--navy);
   font-family: "Poppins", sans-serif;
   font-size: 22px;
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.25;
-  color: var(--navy);
+  text-align: center;
 }
 
 .symptom {
   margin: 0;
   padding: 14px 16px;
   border-left: 3px solid var(--orange);
-  background: rgba(242, 121, 45, 0.06);
   border-radius: 0 10px 10px 0;
+  color: var(--navy);
+  background: rgba(242, 121, 45, 0.06);
   font-family: "Poppins", sans-serif;
   font-size: 14.5px;
   font-weight: 500;
   letter-spacing: -0.01em;
   line-height: 1.5;
-  color: var(--navy);
 }
 
 .description {
@@ -53,28 +77,115 @@
   line-height: 1.75;
 }
 
-@media (max-width: 900px) {
-  .grid {
-    grid-template-columns: 1fr;
+/* ---------- the deck: driven by the scroll ---------- */
+
+/* What sticks - the intro with the deck, or the deck alone - and where, the
+   script sets (lib/pin.ts). The deck keeps its room on top for the cartoon. */
+
+/* The scroll the deck stays put through: most of a screen per card that goes
+   to the back, and a little more for the last one to be read. */
+.track[data-armed] .runway {
+  height: calc((var(--cards, 4) - 1) * 70vh + 20vh);
+}
+
+/* Every card in the one cell, so the deck is as tall as the tallest. */
+.track[data-armed] .deck {
+  grid-template-columns: minmax(0, 1fr);
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+/* Placed by the script; scaled from the bottom edge, so the cards behind
+   peek out below the front one, each a little narrower. */
+.track[data-armed] .card {
+  grid-area: 1 / 1;
+  border-color: #e1e6ec;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 24px 50px -30px rgba(1, 33, 65, 0.38);
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+/* The further back, the paler. */
+.track[data-armed] .card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: #e9edf2;
+  opacity: calc(var(--depth, 0) * 0.28);
+  pointer-events: none;
+}
+
+/* Only the front card shows its cartoon. */
+.track[data-armed] .badge {
+  opacity: var(--front, 1);
+}
+
+/* Roomier on a wide deck. */
+@media (min-width: 621px) {
+  .track[data-armed] .card {
+    padding: 88px 44px 40px;
+  }
+
+  .track[data-armed] .title {
+    font-size: 24px;
+  }
+
+  .track[data-armed] .description {
+    font-size: 15.5px;
   }
 }
 
+/* ---------- narrow ---------- */
+
+@media (max-width: 900px) {
+  .deck {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Phones: a tighter card and a smaller medallion, the same in the deck and
+   in the grid, so the deck has a chance to fit under the bar. */
 @media (max-width: 620px) {
+  .track {
+    --stick-gap: 64px;
+    --step-y: 12px;
+  }
+
+  .deck {
+    gap: 72px;
+    padding-top: 52px;
+  }
+
   .card {
-    padding: 24px;
+    gap: 12px;
+    padding: 62px 20px 22px;
+    border-radius: 20px;
+  }
+
+  .badge {
+    top: -50px;
+    width: 100px;
+    height: 100px;
+    padding: 5px;
+    box-shadow:
+      0 0 0 5px #fff,
+      0 14px 24px -16px rgba(1, 33, 65, 0.45);
   }
 
   .title {
-    font-size: 20px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .card {
-    transition: none;
+    font-size: 19px;
   }
 
-  .card:hover {
-    transform: none;
+  .symptom {
+    padding: 10px 12px;
+    font-size: 13.5px;
+  }
+
+  .description {
+    font-size: 14px;
+    line-height: 1.6;
   }
 }

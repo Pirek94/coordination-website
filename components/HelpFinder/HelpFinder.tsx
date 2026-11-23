@@ -2,7 +2,7 @@
 
 import { useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, TriangleAlert } from "lucide-react";
 import CtaButton from "@/components/CtaButton/CtaButton";
 import SectionIntro from "@/components/SectionIntro/SectionIntro";
 import { SITUATIONS } from "@/lib/content/situations";
@@ -66,16 +66,26 @@ export default function HelpFinder({
 
   const chips = useRef(new Map<SupportAreaId, HTMLLIElement>());
   const title = useRef<HTMLHeadingElement>(null);
+  const ghosts = useRef<HTMLSpanElement>(null);
+  /** The starting area shown before this one, whose pill fades out as the new one lands. */
+  const shown = useRef<string | null>(null);
 
   // When the starting area changes, its chip flies from the map to the
   // answer, where the same pill, at the same size, heads the description.
   // The pill in the answer is moved from the chip's place to its own; the
-  // chip in the map dims while it is away.
+  // chip in the map dims while it is away. The answer itself is a new element
+  // for every area, so the pill it had is gone at once: a copy of it, left in
+  // its place, fades out under the one flying in.
   useLayoutEffect(() => {
+    const before = shown.current;
+
+    shown.current = top?.short ?? null;
+
     const chip = top && chips.current.get(top.id);
     const pill = title.current;
+    const layer = ghosts.current;
 
-    if (!chip || !pill || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!chip || !pill || !layer || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const from = chip.getBoundingClientRect();
     const to = pill.getBoundingClientRect();
@@ -91,9 +101,36 @@ export default function HelpFinder({
     );
     const away = chip.animate([{ opacity: 0.3 }, { opacity: 0.3, offset: 0.6 }, { opacity: 1 }], timing);
 
+    // Every answer puts its pill in the same place, so the old one stood
+    // where the new one lands.
+    let ghost: HTMLElement | null = null;
+
+    if (before && before !== top.short) {
+      const origin = layer.getBoundingClientRect();
+
+      ghost = pill.cloneNode(false) as HTMLElement;
+      ghost.textContent = before;
+      ghost.removeAttribute("id");
+      ghost.className = `${pill.className} ${styles.ghost}`;
+      ghost.style.left = `${to.left - origin.left}px`;
+      ghost.style.top = `${to.top - origin.top}px`;
+      layer.append(ghost);
+
+      const out = ghost.animate(
+        [
+          { opacity: 1, transform: "none" },
+          { opacity: 0, transform: "scale(0.9)" },
+        ],
+        { duration: 380, easing: "ease-out", fill: "forwards" },
+      );
+
+      out.onfinish = () => ghost?.remove();
+    }
+
     return () => {
       flight.cancel();
       away.cancel();
+      ghost?.remove();
     };
     // Only a new starting area flies, not every tick that keeps the same one.
   }, [top?.id]);
@@ -146,7 +183,7 @@ export default function HelpFinder({
           </div>
 
           <div className={styles.result} id="od-czego-zaczac">
-            <p className={styles.resultLabel}>Obszary, którymi się zajmujemy</p>
+            <h3 className={styles.resultHeading}>Obszary, którymi się zajmujemy</h3>
             <ul className={styles.areas}>
               {SUPPORT_AREAS.map((area) => {
                 const score = scores.get(area.id) ?? 0;
@@ -169,18 +206,23 @@ export default function HelpFinder({
             </ul>
 
             <div className={styles.verdict} aria-live="polite">
+              {/* Where the outgoing pill fades; filled only by the effect above. */}
+              <span ref={ghosts} className={styles.ghosts} aria-hidden="true" />
               {top ? (
                 <div key={top.id} className={styles.answer}>
-                  <p className={styles.resultLabel}>Od tego byśmy zaczęli</p>
+                  <h3 className={styles.resultHeading}>Od tego byśmy zaczęli</h3>
                   <h3 ref={title} className={styles.answerPill}>
                     {top.short}
                   </h3>
                   <p className={styles.answerText}>{top.description}</p>
                   {picked.length >= MANY && (
-                    <p className={styles.note}>
-                      Kilka sygnałów naraz to typowy obraz firmy, która działa, ale działa za ciężko. Z takimi firmami
-                      pracujemy najczęściej.
-                    </p>
+                    <div className={styles.note} role="note">
+                      <TriangleAlert className={styles.noteIcon} aria-hidden="true" />
+                      <p>
+                        Kilka sygnałów naraz to typowy obraz firmy, która działa, ale działa za ciężko. Z takimi
+                        firmami pracujemy najczęściej.
+                      </p>
+                    </div>
                   )}
                   <div className={styles.actions}>
                     <CtaButton href={areaAnchors ? "/#kontakt" : "#kontakt"}>Porozmawiajmy o tym</CtaButton>

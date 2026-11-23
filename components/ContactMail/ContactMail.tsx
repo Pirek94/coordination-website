@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Quote, Star } from "lucide-react";
 import MailForm from "@/components/MailForm/MailForm";
 import SectionIntro from "@/components/SectionIntro/SectionIntro";
 import styles from "./ContactMail.module.css";
@@ -93,21 +94,34 @@ export default function ContactMail() {
     <section className={styles.contact} id="kontakt">
       <div className={styles.intro}>
         <SectionIntro title="Umów się na bezpłatną konsultację">
-          Zaczynamy od trzech bezpłatnych spotkań roboczych. My sprawdzamy, czy możemy realnie
-          pomóc Twojej firmie, a Ty, czy nasz sposób pracy Ci odpowiada. Jeśli nie ma
-          dopasowania, nie kontynuujemy.
+          Pierwsza rozmowa jest bezpłatna i służy poznaniu sytuacji firmy oraz sprawdzeniu
+          dopasowania. Diagnoza Zarządcza jest osobnym, płatnym etapem obejmującym zazwyczaj
+          2–3 spotkania; cena całego etapu wynosi 500 zł netto.
         </SectionIntro>
 
         <figure className={styles.testimonial}>
+          <Quote className={styles.quoteMark} aria-hidden="true" />
           <blockquote className={styles.quote}>
-            &bdquo;Z ręką na sercu polecam usługi firmy. Szymon to niesamowicie kompetentna osoba
+            Z ręką na sercu polecam usługi firmy. Szymon to niesamowicie kompetentna osoba
             z ogromną wiedzą w temacie przedsiębiorczości i rozwoju osobistego. Do klientów
             podchodzi z pełnym profesjonalizmem i zaangażowaniem. Super atmosfera, można się czuć
-            swobodnie podczas konsultacji.&rdquo;
+            swobodnie podczas konsultacji.
           </blockquote>
           <figcaption className={styles.author}>
-            <span className={styles.authorName}>Adrian Mech</span>
-            <span className={styles.authorRole}>CEO Inoveria</span>
+            <span className={styles.avatar} aria-hidden="true">
+              AM
+            </span>
+            <span className={styles.who}>
+              <span className={styles.nameRow}>
+                <span className={styles.authorName}>Adrian Mech</span>
+                <span className={styles.stars} role="img" aria-label="Ocena 5 na 5">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <Star key={i} aria-hidden="true" />
+                  ))}
+                </span>
+              </span>
+              <span className={styles.authorRole}>CEO Inoveria</span>
+            </span>
           </figcaption>
         </figure>
       </div>

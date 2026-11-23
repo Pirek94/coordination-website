@@ -1,0 +1,468 @@
+/*
+ * The firm-type cartoons. The base style of every part is its resting pose;
+ * nothing moves unless an ancestor card carries `data-play` (see
+ * FirmTypes.module.css), so the cards at the back of the deck stay still.
+ */
+
+.art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* --- the palette --------------------------------------------------------- */
+
+.ink {
+  fill: none;
+  stroke: var(--navy);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.paper {
+  fill: #fff;
+}
+
+.orange {
+  fill: var(--orange);
+}
+
+.cream {
+  fill: #ffe2c8;
+}
+
+.sky {
+  fill: #cfe0f1;
+}
+
+
+
+.navySleeve {
+  fill: #2a5687;
+}
+
+
+
+
+
+
+.shadow {
+  fill: rgba(1, 33, 65, 0.09);
+}
+
+/* Every moving part turns about its own middle unless it says otherwise. */
+.box,
+.roller {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* --- Firmy produkcyjne: the conveyor -------------------------------------
+ *
+ * Drawn to scale: 1 px is about 2 cm, so a parcel is some 50 cm a side,
+ * gravity is 490 px/s² and the belt runs at 30 px/s (0.6 m/s). Everything
+ * follows from those, so nothing slips against anything else:
+ *
+ * - the belt wraps rollers of radius 16, whose hubs turn
+ *   once in                                   2π · 16 / 30    ≈ 3.351 s;
+ * - a parcel falls 62 px from rest:            √(2 · 62 / 490) ≈ 0.50 s;
+ * - friction from that landing brings it to the belt's speed at once,
+ *   and it rides 64.3 px, from x = 36 to the end roller's middle: 2.14 s.
+ *
+ * Off the end it tips only once its middle has passed the roller's, rolls
+ * over the belt's rounded end and falls on, spinning at a steady rate. That
+ * stretch is sampled every 50 ms from a rigid-body simulation of the same
+ * parcel and belt (friction 0.5). It starts and ends out of the medallion's
+ * circle, which hides it.
+ */
+
+.belt {
+  fill: #808080;
+}
+
+.beltDark {
+  fill: #4a4a4a;
+}
+
+.cardboard {
+  fill: #e2bb8c;
+}
+
+.tape {
+  fill: rgba(255, 255, 255, 0.59);
+}
+
+/* Until their first drop the parcels wait out of sight, above the belt. */
+.box {
+  opacity: 0;
+  transform: translate(36px, -62px);
+}
+
+/* A parcel gives a little where it lands, so it squashes from its bottom. */
+.squash {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+[data-play] .hum {
+  animation: hum 0.16s steps(2) infinite alternate;
+}
+
+[data-play] .roller {
+  animation: spin 3.351s linear infinite;
+}
+
+[data-play] .box {
+  animation: ride 3.6s linear var(--delay, 0s) infinite;
+}
+
+[data-play] .squash {
+  animation: land 3.6s ease-out var(--delay, 0s) infinite;
+}
+
+@keyframes hum {
+  to {
+    transform: translate(0.4px, 0.7px);
+  }
+}
+
+@keyframes spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+/*
+ * One parcel's 3.6 s: translate() moves its middle, rotate() turns it about
+ * that middle. It falls in from above the circle (the easing is exactly
+ * t², a fall from rest), rides the belt at its speed and goes off the end.
+ */
+@keyframes ride {
+  0% {
+    opacity: 1;
+    transform: translate(36px, -62px) rotate(0deg);
+    animation-timing-function: cubic-bezier(0.333, 0, 0.667, 0.333);
+  }
+  13.97% {
+    transform: translate(36px, 0) rotate(0deg);
+  }
+  /* Its middle over the end roller: from here it tips. */
+  73.48% {
+    transform: translate(100.3px, 0) rotate(0deg);
+  }
+  74.87% {
+    transform: translate(101.8px, 0) rotate(0.1deg);
+  }
+  76.26% {
+    transform: translate(103.4px, 0) rotate(0.6deg);
+  }
+  77.65% {
+    transform: translate(105.1px, 0.1px) rotate(1.8deg);
+  }
+  79.04% {
+    transform: translate(107.1px, 0.4px) rotate(4deg);
+  }
+  80.43% {
+    transform: translate(109.3px, 0.9px) rotate(7.6deg);
+  }
+  81.82% {
+    transform: translate(111.8px, 1.9px) rotate(12.6deg);
+  }
+  83.21% {
+    transform: translate(114.5px, 3.3px) rotate(19.4deg);
+  }
+  84.59% {
+    transform: translate(117.4px, 5.3px) rotate(28.3deg);
+  }
+  85.98% {
+    transform: translate(120.3px, 8.1px) rotate(39.4deg);
+  }
+  87.37% {
+    transform: translate(123.3px, 11.7px) rotate(52.1deg);
+  }
+  88.76% {
+    transform: translate(126.4px, 16.5px) rotate(64.9deg);
+  }
+  90.15% {
+    transform: translate(129.4px, 22.6px) rotate(77.7deg);
+  }
+  91.54% {
+    transform: translate(132.4px, 29.8px) rotate(90.5deg);
+  }
+  92.93% {
+    transform: translate(135.5px, 38.3px) rotate(103.3deg);
+  }
+  /* Out of the circle; it waits there for the next drop. */
+  94.32%,
+  100% {
+    opacity: 1;
+    transform: translate(138.5px, 48px) rotate(116.2deg);
+  }
+}
+
+/* The landing, at 13.97%: a quick squash against the belt and back. */
+@keyframes land {
+  0%,
+  13.97% {
+    scale: 1;
+    animation-timing-function: cubic-bezier(0, 0, 0.4, 1);
+  }
+  15.2% {
+    scale: 1.06 0.92;
+  }
+  17.2%,
+  100% {
+    scale: 1;
+  }
+}
+
+/* --- Firmy usługowe i eksperckie: the handshake -------------------------- */
+
+.skinClient {
+  fill: #f0b890;
+}
+
+.skinFirm {
+  fill: #ffdabc;
+}
+
+/*
+ * The pump. The clasp moves as one, straight up and down, three strokes
+ * fading out and then a rest, slowing to a stop at every turn the way an arm
+ * does. Each forearm hinges at its elbow, up and out past the medallion, by
+ * just the angle that keeps its wrist on the clasp: the wrist sits 65.5 units
+ * out from the elbow, square to the pump, so 5 units of pump is 4.37°. The
+ * forearms come in at a slant, so the wrists also drift sideways by about
+ * half the pump, which the cuffs swallow. All of it on the one clock and the
+ * one easing, so the arms and the hands never part.
+ */
+.clasp,
+.elbowClient,
+.elbowFirm {
+  transform-box: view-box;
+}
+
+.elbowClient {
+  transform-origin: -25.1px 27.5px;
+}
+
+.elbowFirm {
+  transform-origin: 141.6px 24.8px;
+}
+
+.handShadow {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+[data-play] .clasp,
+[data-play] .elbowClient,
+[data-play] .elbowFirm,
+[data-play] .handShadow {
+  animation: 2.8s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+}
+
+[data-play] .clasp {
+  animation-name: pump;
+}
+
+[data-play] .elbowClient {
+  animation-name: elbow-client;
+}
+
+[data-play] .elbowFirm {
+  animation-name: elbow-firm;
+}
+
+/* The hands rise off the shadow a little and come back down to it. */
+[data-play] .handShadow {
+  animation-name: lift;
+}
+
+@keyframes pump {
+  0%,
+  62%,
+  100% {
+    translate: 0 0;
+  }
+  7% {
+    translate: 0 -5px;
+  }
+  19% {
+    translate: 0 5px;
+  }
+  31% {
+    translate: 0 -4.5px;
+  }
+  43% {
+    translate: 0 3.5px;
+  }
+  53% {
+    translate: 0 -1.5px;
+  }
+}
+
+@keyframes elbow-client {
+  0%,
+  62%,
+  100% {
+    rotate: 0deg;
+  }
+  7% {
+    rotate: -4.37deg;
+  }
+  19% {
+    rotate: 4.37deg;
+  }
+  31% {
+    rotate: -3.94deg;
+  }
+  43% {
+    rotate: 3.06deg;
+  }
+  53% {
+    rotate: -1.31deg;
+  }
+}
+
+@keyframes elbow-firm {
+  0%,
+  62%,
+  100% {
+    rotate: 0deg;
+  }
+  7% {
+    rotate: 4.37deg;
+  }
+  19% {
+    rotate: -4.37deg;
+  }
+  31% {
+    rotate: 3.94deg;
+  }
+  43% {
+    rotate: -3.06deg;
+  }
+  53% {
+    rotate: 1.31deg;
+  }
+}
+
+@keyframes lift {
+  0%,
+  62%,
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+  7% {
+    opacity: 0.7;
+    scale: 0.93 1;
+  }
+  19% {
+    opacity: 1;
+    scale: 1.05 1;
+  }
+  31% {
+    opacity: 0.72;
+    scale: 0.935 1;
+  }
+  43% {
+    opacity: 1;
+    scale: 1.04 1;
+  }
+  53% {
+    opacity: 0.9;
+    scale: 0.98 1;
+  }
+}
+
+/* --- Firmy handlowe, techniczne i projektowe: the offices ---------------- */
+
+.wall {
+  fill: #ebebeb;
+}
+
+.door {
+  fill: #522f00;
+}
+
+.chimney {
+  fill: var(--navy);
+}
+
+.pane {
+  fill: #3b6d99;
+}
+
+/*
+ * The lights: 16.7 s a round. Each window switches on at its own moment in
+ * the first 1.6 s (its --delay), stays lit 7 s and switches off, so they go
+ * dark one by one as they came on. The two late ones stay lit 9 s. The last
+ * of them is out at 9.7 s, and 7 s on the round starts again.
+ */
+[data-play] .lit {
+  animation: lit 16.7s linear var(--delay, 0s) infinite;
+}
+
+[data-play] .late {
+  animation: late 16.7s linear var(--delay, 0s) infinite;
+}
+
+@keyframes lit {
+  0%,
+  43.71%,
+  100% {
+    fill: #3b6d99;
+  }
+  0.9%,
+  41.92% {
+    fill: #cfe9e2;
+  }
+}
+
+@keyframes late {
+  0%,
+  55.69%,
+  100% {
+    fill: #3b6d99;
+  }
+  0.9%,
+  53.89% {
+    fill: #cfe9e2;
+  }
+}
+
+/* --- Firmy rodzinne: the house ------------------------------------------- *
+ *
+ * Its smoke is the offices' (see Smoke in FirmArt.tsx), moved onto this
+ * chimney.
+ */
+
+.timber {
+  fill: #794100;
+}
+
+.render {
+  fill: #e9c9ab;
+}
+
+.roof {
+  fill: #ff6100;
+}
+
+.glass {
+  fill: #93cad7;
+}
+
+.shutter {
+  fill: #fbf6f2;
+}
+
+.slats {
+  stroke: #e8d6c7;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}

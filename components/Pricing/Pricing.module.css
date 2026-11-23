@@ -139,6 +139,44 @@
   stroke-width: 1.6;
 }
 
+.titles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* "ETAP X": a small heading over the stage name. */
+.tag {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 2px;
+  color: #bd5a20;
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+.optional {
+  padding: 2px 8px;
+  border: 1px solid #f5d8c2;
+  border-radius: 999px;
+  background: #fff6ef;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lead {
+  margin: 2px 0 0;
+  color: #44515f;
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
 .card h3 {
   max-width: 280px;
   margin: 0;
@@ -162,21 +200,11 @@
   background: linear-gradient(140deg, #f7f9fb, #eef2f6);
 }
 
-.prefix {
-  color: #bd5a20;
-  font-family: "Poppins", sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  line-height: 1.6;
-  text-transform: uppercase;
-}
-
 .amount {
   display: flex;
   align-items: baseline;
   gap: 7px;
-  margin: 2px 0 6px;
+  margin: 0 0 6px;
   color: var(--navy);
   font-family: "Poppins", sans-serif;
   font-weight: 600;
@@ -188,6 +216,10 @@
   font-weight: 600;
   letter-spacing: -0.055em;
   line-height: 1.05;
+}
+
+.amountLong strong {
+  font-size: clamp(30px, 2.7vw, 40px);
 }
 
 .currency {
@@ -398,6 +430,8 @@
   .card h3 { font-size: 20px; }
   .price { align-self: stretch; }
   .amount strong { font-size: 46px; }
+  .amountLong strong { font-size: 38px; }
+  .head { align-items: flex-start; }
   .ask { align-self: stretch; }
   .shared { --glow-at: 100% 100%; padding: 30px 26px; }
   .shared ul { grid-template-columns: 1fr; gap: 10px; }

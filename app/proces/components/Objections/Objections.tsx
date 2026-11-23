@@ -38,8 +38,8 @@ const OBJECTIONS: readonly Objection[] = [
     id: "price",
     quote: "To pewnie kosztuje więcej, niż mogę wydać",
     answer:
-      "Orientacyjne ceny są jawne: od 1800 zł netto miesięcznie dla firm usługowych i eksperckich oraz od 2300 zł netto miesięcznie dla firm produkcyjnych, handlowych, technicznych i projektowych. Zakres zależy od firmy, a zanim cokolwiek ustalimy, odbywamy trzy bezpłatne spotkania robocze.",
-    link: { href: "/#cennik", label: "Zobacz orientacyjne ceny" },
+      "Ceny są jawne: Diagnoza Zarządcza kosztuje 500 zł netto, 90-dniowy Sprint Systemowy 6 000 zł netto, a opcjonalna stała współpraca 3 100–4 800 zł netto miesięcznie. Pierwsza rozmowa jest bezpłatna, a diagnoza nie zobowiązuje do dalszej współpracy.",
+    link: { href: "/#cennik", label: "Zobacz etapy i ceny" },
   },
   {
     id: "outsider",
@@ -51,7 +51,7 @@ const OBJECTIONS: readonly Objection[] = [
     id: "timing",
     quote: "Nie wiem, czy to dobry moment",
     answer:
-      "Dlatego zaczynamy od trzech bezpłatnych spotkań roboczych, bez deklaracji długoterminowej współpracy. Po nich oboje wiemy, czy możemy realnie pomóc Twojej firmie teraz. Jeżeli nie ma dopasowania, nie kontynuujemy.",
+      "Dlatego zaczynamy od bezpłatnej rozmowy, a potem od Diagnozy Zarządczej - samodzielnego etapu, który nie zobowiązuje do dalszej współpracy. Po nim oboje wiemy, czy i od czego warto zacząć zmiany. Jeżeli nie ma dopasowania, nie kontynuujemy.",
     link: { href: "#kontakt", label: "Umów pierwsze spotkanie" },
   },
 ];

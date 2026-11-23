@@ -54,10 +54,12 @@ export default function ReadinessPaths() {
         <ol className={styles.paths}>
           {PATHS.map(({ Icon, when, title, text, cta, href }) => (
             <li key={title} className={styles.path}>
-              <span className={styles.icon} aria-hidden="true">
-                <Icon />
-              </span>
-              <p className={styles.when}>{when}</p>
+              <div className={styles.head}>
+                <span className={styles.icon} aria-hidden="true">
+                  <Icon />
+                </span>
+                <p className={styles.when}>{when}</p>
+              </div>
               <h3 className={styles.title}>{title}</h3>
               <p className={styles.text}>{text}</p>
               {/* The whole card is the link, through the link's stretched ::after. */}

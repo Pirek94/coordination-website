@@ -95,7 +95,7 @@ export default function ProcessTimeline() {
           <span className={styles.startIcon} aria-hidden="true">
             <CalendarCheck />
           </span>
-          <p className={styles.startTitle}>Zanim zaczniemy, trzy bezpłatne spotkania</p>
+          <p className={styles.startTitle}>Zaczynamy od bezpłatnej rozmowy i Diagnozy Zarządczej</p>
           <a className={styles.startCta} href="#kontakt">
             Umów pierwsze spotkanie
           </a>

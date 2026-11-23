@@ -87,3 +87,7 @@ export const SITUATIONS: readonly Situation[] = [
       "Powtarzalne sytuacje mają swoje zasady, więc kolejny podobny przypadek nie zaczyna się od zera.",
   },
 ];
+
+/** The line under the before-and-after list of the situations. */
+export const AFTER_CHANGE_NOTE =
+  "Ta zmiana nie ma zostać w prezentacji. Ma być widoczna w codziennych decyzjach, ofertach i w tym, ile Twojego czasu wymaga prowadzenie firmy.";
