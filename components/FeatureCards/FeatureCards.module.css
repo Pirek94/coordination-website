@@ -24,6 +24,19 @@
   transform: translateY(-2px);
 }
 
+/* A card linked to directly stops a little below the nav pill (the page's
+   scroll-padding clears the pill itself) and is marked as the one meant. */
+.card[id] {
+  scroll-margin-top: 24px;
+}
+
+.card:target {
+  border-color: var(--orange);
+  box-shadow:
+    0 0 0 3px rgba(242, 121, 45, 0.18),
+    0 16px 32px -20px rgba(1, 33, 65, 0.24);
+}
+
 .cards[data-variant="stacked"] .card {
   flex-direction: row;
   align-items: flex-start;

@@ -4,13 +4,29 @@ import SectionIntro from "@/components/SectionIntro/SectionIntro";
 import ContactMail from "@/components/ContactMail/ContactMail";
 import Footer from "@/components/Footer/Footer";
 import SiteNav from "@/components/SiteNav/SiteNav";
+import AfterChange from "@/components/AfterChange/AfterChange";
 import SituationCards from "./components/SituationCards/SituationCards";
 import StageMatrix from "./components/StageMatrix/StageMatrix";
-import NotForYou from "./components/NotForYou/NotForYou";
+import ArrowReveal from "./components/ArrowReveal/ArrowReveal";
 import FirmTypes from "./components/FirmTypes/FirmTypes";
 import Approach from "./components/Approach/Approach";
-import AfterChange from "./components/AfterChange/AfterChange";
+import { REDIRECTIONS, REDIRECTIONS_NOTE } from "@/lib/content/redirections";
+import { AFTER_CHANGE_NOTE, SITUATIONS } from "@/lib/content/situations";
 import styles from "./dla-kogo.module.css";
+
+/** „Kiedy nie jesteśmy właściwym wyborem”: each situation struck through, with where to go instead. */
+const NOT_FOR_YOU_ROWS = REDIRECTIONS.map(({ id, situation, redirect }) => ({
+  id,
+  before: situation,
+  after: redirect,
+}));
+
+/** „Co ma się zmienić po doradztwie?”: each situation, and the arrow uncovering how it should look after. */
+const CHANGE_ROWS = SITUATIONS.map(({ id, title, after }) => ({
+  id,
+  from: title,
+  to: after,
+}));
 
 export const metadata: Metadata = {
   title: "Dla kogo jest doradztwo",
@@ -82,6 +98,40 @@ export default function DlaKogoPage() {
         </div>
       </section>
 
+      <section className={styles.afterChange}>
+        <div className={styles.inner}>
+          <ArrowReveal
+            rows={CHANGE_ROWS}
+            note={AFTER_CHANGE_NOTE}
+            dense
+            intro={
+              <div className={styles.intro}>
+                <SectionIntro title="Co ma się zmienić po doradztwie?">
+                  Te same sytuacje, od których zaczynaliśmy, po zakończonej pracy. Doradztwo nie
+                  kończy się na rekomendacjach - jego efekt ma być widoczny w tym, jak firma działa
+                  na co dzień.
+                </SectionIntro>
+              </div>
+            }
+          />
+        </div>
+      </section>
+
+      <section className={styles.firmTypes}>
+        <div className={styles.inner}>
+          <FirmTypes
+            intro={
+              <div className={styles.intro}>
+                <SectionIntro title="Jak to wygląda w różnych branżach">
+                  Problem jest ten sam, ale objawia się różnie w zależności od rodzaju działalności.
+                  Poniżej najczęstsze konfiguracje, z którymi pracujemy.
+                </SectionIntro>
+              </div>
+            }
+          />
+        </div>
+      </section>
+
       <section className={styles.notForYou}>
         <div className={styles.inner}>
           <div className={styles.intro}>
@@ -91,34 +141,11 @@ export default function DlaKogoPage() {
             </SectionIntro>
           </div>
 
-          <NotForYou />
-        </div>
-      </section>
-
-      <section className={styles.firmTypes}>
-        <div className={styles.inner}>
-          <div className={styles.intro}>
-            <SectionIntro title="Jak to wygląda w różnych branżach">
-              Problem jest ten sam, ale objawia się różnie w zależności od rodzaju działalności.
-              Poniżej najczęstsze konfiguracje, z którymi pracujemy.
-            </SectionIntro>
-          </div>
-
-          <FirmTypes />
-        </div>
-      </section>
-
-      <section className={styles.afterChange}>
-        <div className={styles.inner}>
-          <div className={styles.intro}>
-            <SectionIntro title="Co ma się zmienić po doradztwie?">
-              Te same sytuacje, od których zaczynaliśmy, po zakończonej pracy. Doradztwo nie kończy
-              się na rekomendacjach - jego efekt ma być widoczny w tym, jak firma działa na co
-              dzień.
-            </SectionIntro>
-          </div>
-
-          <AfterChange />
+          <AfterChange
+            rows={NOT_FOR_YOU_ROWS}
+            labels={{ before: "Twoja sytuacja", after: "Czego potrzebujesz" }}
+            note={REDIRECTIONS_NOTE}
+          />
         </div>
       </section>
 

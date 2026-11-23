@@ -1,0 +1,749 @@
+/* Wide: the ring on the left, the chosen part's panel on the right. */
+.map {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  align-items: center;
+  gap: clamp(28px, 4vw, 64px);
+}
+
+/* ---------- the ring ---------- */
+
+.diagram {
+  position: relative;
+  width: min(100%, 600px);
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+/* A soft glow behind the ring, so it sits on the section rather than in it. */
+.diagram::before {
+  content: "";
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242, 121, 45, 0.1), rgba(242, 121, 45, 0) 65%);
+  pointer-events: none;
+}
+
+.map[data-armed] .diagram::before {
+  animation: aura 7s ease-in-out infinite;
+}
+
+@keyframes aura {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(0.97);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+}
+
+.lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.orbit {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 0.3;
+  stroke-dasharray: 0.6 1.4;
+}
+
+.edge {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.09);
+  stroke-width: 0.3;
+  stroke-linecap: round;
+}
+
+.lit {
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 0.65;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 1.4px rgba(242, 121, 45, 0.65));
+  transition: opacity 0.25s ease, stroke-width 0.25s ease;
+}
+
+/* Pointing at one decision in the panel leaves only its own lines lit. */
+.lit[data-faded] {
+  opacity: 0.16;
+}
+
+/* Each hop draws in after the one before it. */
+.map[data-armed] .lit {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation:
+    draw 0.55s cubic-bezier(0.65, 0, 0.35, 1) var(--delay, 0s) forwards,
+    glow 4s ease-in-out calc(var(--delay, 0s) + 0.55s) infinite;
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 1.2px rgba(242, 121, 45, 0.55));
+  }
+  50% {
+    filter: drop-shadow(0 0 2.6px rgba(242, 121, 45, 0.95));
+  }
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Under the buttons on wide screens; the whole ring on narrow ones. */
+.dot {
+  fill: #18395c;
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 0.5;
+  transition: fill 0.3s ease, stroke 0.3s ease;
+}
+
+.dot[data-state="linked"] {
+  stroke: var(--orange);
+}
+
+.dot[data-state="active"] {
+  fill: var(--orange);
+  stroke: var(--orange);
+}
+
+/* ---------- the six parts ---------- */
+
+.nodes {
+  position: absolute;
+  inset: 0;
+}
+
+/* Three layers of depth. Where a node sits is its `translate`, how near it
+   is its `scale` and focus, and the slow breathing runs on `transform`, so
+   the three never fight over one property. */
+.node {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: clamp(118px, 25%, 150px);
+  padding: 12px 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 20px;
+  color: #fff;
+  background: #123a63;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 18px 32px -20px rgba(0, 0, 0, 0.7);
+  font-family: "Poppins", sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  text-align: center;
+  cursor: pointer;
+  translate: -50% -50%;
+  transition:
+    color 0.5s ease,
+    border-color 0.5s ease,
+    background-color 0.5s ease,
+    box-shadow 0.5s ease,
+    filter 0.6s ease,
+    scale 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.map[data-armed] .node {
+  animation: breathe 6.5s ease-in-out calc(var(--i, 0) * -1.1s) infinite;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: translateY(-2.5px);
+  }
+  50% {
+    transform: translateY(2.5px);
+  }
+}
+
+.badge {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: var(--orange);
+  background: rgba(242, 121, 45, 0.14);
+  transition: color 0.5s ease, background-color 0.5s ease;
+}
+
+.badge svg {
+  width: 18px;
+  height: 18px;
+}
+
+.node:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.node:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+}
+
+/* Farthest back: the parts the picked one does not reach. Smaller, darker
+   and a touch out of focus, and dimmed by colour rather than opacity, so the
+   lines that run behind them never show through their labels. */
+.node[data-state="dim"] {
+  z-index: 1;
+  border-color: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.55);
+  background: #0a2848;
+  box-shadow: 0 10px 24px -18px rgba(0, 0, 0, 0.6);
+  filter: blur(0.5px) saturate(0.7);
+  scale: 0.86;
+}
+
+.node[data-state="dim"] .badge {
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.node[data-state="dim"]:hover,
+.node[data-state="dim"]:focus-visible {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+  filter: none;
+  scale: 0.92;
+}
+
+.node[data-state="dim"]:hover .badge,
+.node[data-state="dim"]:focus-visible .badge {
+  color: var(--orange);
+  background: rgba(242, 121, 45, 0.14);
+}
+
+/* The middle layer: the parts its decisions land in. */
+.node[data-state="linked"] {
+  border-color: rgba(242, 121, 45, 0.65);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 3px rgba(242, 121, 45, 0.1),
+    0 22px 36px -20px rgba(0, 0, 0, 0.8);
+  scale: 0.96;
+}
+
+.node[data-state="linked"]:hover {
+  scale: 1;
+}
+
+/* In front: the picked part. */
+.node[data-state="active"] {
+  z-index: 3;
+  border-color: var(--orange);
+  background: var(--orange);
+  box-shadow:
+    0 0 0 6px rgba(242, 121, 45, 0.2),
+    0 30px 50px -18px rgba(0, 0, 0, 0.75),
+    0 20px 44px -14px rgba(242, 121, 45, 0.85);
+  scale: 1.1;
+}
+
+.node[data-state="active"] .badge {
+  color: var(--orange);
+  background: #fff;
+}
+
+/* ---------- the panel ---------- */
+
+/* Every panel sits in the same cell, the others kept invisible rather than
+   removed, so the cell is as tall as the longest one and the page below does
+   not jump as the map walks round. Beside the ring each panel is only as tall
+   as its own content, centred in that cell, so a short one carries no empty
+   room inside it; above or below the ring they fill the cell instead (see the
+   media queries), so the panel's top edge stays put. */
+.panels {
+  display: grid;
+  min-width: 0;
+}
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  grid-area: 1 / 1;
+  align-self: center;
+  min-width: 0;
+  padding: clamp(20px, 2vw, 26px);
+  overflow: hidden;
+  border-radius: 22px;
+  color: var(--navy);
+  background: #fff;
+  box-shadow: 0 30px 70px -40px rgba(0, 0, 0, 0.75);
+}
+
+.panel[hidden] {
+  display: flex;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Changing part cross-fades the two panels in their shared cell: the old one
+   fades out (and only then turns invisible to assistive tech), the new one
+   fades in on top of it while its content rises into place. */
+.map[data-armed] .panel {
+  z-index: 1;
+  transition: opacity 0.4s ease 0.08s;
+}
+
+.map[data-armed] .panel[hidden] {
+  z-index: 0;
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
+}
+
+.map[data-armed] .panel:not([hidden]) > :not(.progress) {
+  animation: panel-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+.map[data-armed] .panel:not([hidden]) > :nth-child(n + 3) {
+  animation-delay: 0.14s;
+}
+
+/* How long until the map moves on by itself. */
+.progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--orange);
+  transform-origin: left;
+  animation: progress var(--step, 5.5s) linear forwards;
+}
+
+.progress[data-paused] {
+  animation-play-state: paused;
+}
+
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 10px;
+}
+
+.headIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  color: #fff;
+  background: var(--orange);
+  box-shadow: 0 10px 22px -12px rgba(242, 121, 45, 0.9);
+}
+
+.headIcon svg {
+  width: 21px;
+  height: 21px;
+}
+
+.headText {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(20px, 1.9vw, 23px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.pager {
+  display: flex;
+  flex: none;
+  gap: 6px;
+}
+
+.pagerButton {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid #dde3ea;
+  border-radius: 50%;
+  color: var(--navy);
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.pagerButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pagerButton:hover {
+  border-color: var(--orange);
+  color: #fff;
+  background: var(--orange);
+}
+
+.pagerButton:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+.summary {
+  margin: 0 0 16px;
+  color: #5a6675;
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.label {
+  margin: 0 0 8px;
+  color: var(--orange);
+  font-family: "Poppins", sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.chains {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.chain {
+  padding: 11px 14px 12px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: var(--soft);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.chain[data-focused] {
+  border-color: rgba(242, 121, 45, 0.45);
+  background: #fff7f0;
+}
+
+/* The decision and where it lands, as a short line of stops. */
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  gap: 0;
+  padding: 0 0 6px 24px;
+}
+
+.step:last-child {
+  padding-bottom: 0;
+}
+
+.step::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 2px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--orange);
+  border-radius: 50%;
+  background: #fff;
+}
+
+.step[data-first]::before {
+  top: 5px;
+  left: 1px;
+  width: 10px;
+  height: 10px;
+  background: var(--orange);
+}
+
+/* The line on to the next stop. */
+.step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 17px;
+  bottom: -1px;
+  left: 6px;
+  width: 2px;
+  border-radius: 2px;
+  background: rgba(242, 121, 45, 0.35);
+}
+
+.where {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.where svg {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  color: var(--orange);
+}
+
+.what {
+  color: #414c5a;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* The decision itself, taken in the part that is picked. */
+.step[data-first] .what {
+  color: var(--navy);
+  font-family: "Poppins", sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+}
+
+/* Kept at the bottom, so where a panel fills the shared cell the room a
+   shorter one leaves falls above it. */
+.footer {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid #e8ecf0;
+}
+
+.areas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.area {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 12px;
+  border: 1px solid #f3c9a9;
+  border-radius: 999px;
+  color: #9c4614;
+  background: #fff1e5;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.area:hover {
+  border-color: var(--orange);
+  color: #fff;
+  background: var(--orange);
+}
+
+.area:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- medium: the ring above its panel ---------- */
+
+@media (max-width: 1000px) {
+  .map {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .diagram {
+    width: min(100%, 540px);
+  }
+
+  .panels {
+    width: min(100%, 680px);
+    margin: 0 auto;
+  }
+
+  .panel {
+    align-self: stretch;
+  }
+}
+
+/* ---------- narrow: a small ring, and the parts as a grid of chips ---------- */
+
+@media (max-width: 620px) {
+  .map {
+    gap: 22px;
+  }
+
+  .diagram {
+    display: grid;
+    gap: 18px;
+    width: 100%;
+    aspect-ratio: auto;
+  }
+
+  /* Centred with margins, not a transform: the breathing owns transform. */
+  .diagram::before {
+    inset: 0 0 auto;
+    width: min(56vw, 210px);
+    margin: 0 auto;
+    aspect-ratio: 1;
+  }
+
+  .lines {
+    position: static;
+    width: min(56vw, 210px);
+    height: auto;
+    margin: 0 auto;
+    aspect-ratio: 1;
+  }
+
+  .orbit {
+    stroke-width: 0.5;
+  }
+
+  .edge {
+    stroke-width: 0.6;
+  }
+
+  .lit {
+    stroke-width: 1.3;
+  }
+
+
+  .nodes {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .node {
+    position: static;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 9px;
+    width: auto;
+    min-height: 54px;
+    padding: 8px 10px;
+    border-radius: 16px;
+    font-size: 13px;
+    text-align: left;
+    translate: none;
+  }
+
+  /* A flat grid of chips: no depth and no breathing, only colour. */
+  .node,
+  .node:hover,
+  .node[data-state] {
+    scale: none;
+    filter: none;
+  }
+
+  .map[data-armed] .node {
+    animation: none;
+  }
+
+  .badge {
+    width: 30px;
+    height: 30px;
+  }
+
+  .badge svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .node[data-state="active"] {
+    box-shadow: 0 12px 24px -14px rgba(242, 121, 45, 0.8);
+  }
+
+  .panel {
+    padding: 22px 18px;
+  }
+
+  .head {
+    gap: 12px;
+  }
+
+  .headIcon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .headIcon svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .chain {
+    padding: 13px 14px 14px;
+  }
+}
+
+/* The walk, the drawing and the breathing only start when motion is fine
+   (see data-armed); here the depth simply changes without easing. */
+@media (prefers-reduced-motion: reduce) {
+  .node,
+  .badge,
+  .dot,
+  .lit,
+  .chain {
+    transition: none;
+  }
+}
