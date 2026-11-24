@@ -59,10 +59,12 @@ const SCHEDULE_LOOKBACK_MS = 3 * 60 * 60 * 1000;
 const PAGE_CACHE_PREFIX = "incremental-cache/";
 
 /**
- * Old pages removed per cron run. The free plan allows 1000 KV deletes a day;
- * 40 an hour stays under that and clears a deploy's leftovers within hours.
+ * Old pages removed per cron run. The free plan allows 1000 KV deletes a day
+ * for the whole account; 5 an hour (120 a day) leaves almost all of that free.
+ * Leftovers are only clutter (nothing reads them and they fit the free
+ * storage), so clearing them slowly costs nothing.
  */
-const PAGE_CACHE_DELETES_PER_RUN = 40;
+const PAGE_CACHE_DELETES_PER_RUN = 5;
 
 export default {
   async fetch(request: Request, env: Env, ctx: Context): Promise<Response> {
