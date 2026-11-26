@@ -13,7 +13,10 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
     "directory": ".open-next/assets",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    // Serve /<name>.html as is instead of redirecting it to /<name>: Google
+    // Search Console checks public/google13cf27dbf5d4ae5d.html at that address.
+    "html_handling": "none"
   },
   "services": [
     {
