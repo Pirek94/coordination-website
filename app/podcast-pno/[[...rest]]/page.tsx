@@ -1,3 +1,4 @@
+import { baseOpenGraph } from "@/lib/site";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -39,6 +40,7 @@ export const metadata: Metadata = {
     "Podcast dla przedsiębiorców i właścicieli firm, którzy chcą rozwijać biznes w sposób świadomy, uporządkowany i długofalowy. Strategia, sprzedaż i marketing jako jeden system.",
   alternates: { canonical: "/podcast-pno" },
   openGraph: {
+    ...baseOpenGraph,
     title: "Podcast PNO - Pozytywny Networking Online | Coordination",
     description:
       "Podcast dla przedsiębiorców i właścicieli firm, którzy chcą rozwijać biznes w sposób świadomy, uporządkowany i długofalowy.",

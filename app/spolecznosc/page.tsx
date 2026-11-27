@@ -1,3 +1,4 @@
+import { baseOpenGraph } from "@/lib/site";
 import type { Metadata } from "next";
 import { Compass, TrendingUp, Megaphone, ArrowRight, type LucideIcon } from "lucide-react";
 import SubpageHeader from "@/components/SubpageHeader/SubpageHeader";
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
     "Darmowa, zamknięta społeczność na Facebooku dla właścicieli firm, którzy chcą myśleć o biznesie w sposób uporządkowany i długofalowy. Uczymy strategii, sprzedaży i marketingu.",
   alternates: { canonical: "/spolecznosc" },
   openGraph: {
+    ...baseOpenGraph,
     title: "Społeczność - Strategicznie o firmie | Coordination",
     description:
       "Darmowa, zamknięta społeczność na Facebooku dla właścicieli firm, którzy chcą myśleć o biznesie w sposób uporządkowany i długofalowy.",
