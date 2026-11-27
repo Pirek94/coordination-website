@@ -14,6 +14,7 @@ import openNext from "./.open-next/worker.js";
 import { LATEST_POST_SQL, toSummary, type PostRow } from "./lib/blog/rows";
 import { HOME_FAQ_SQL, toPublicFaq, type FaqRow } from "./lib/faq/rows";
 import { isMediaKey, mediaNotFound, mediaResponse, readMedia, type MediaStore } from "./lib/media-response";
+import { siteUrl } from "./lib/site";
 
 // The few D1 calls made here; the real statement and result types have more.
 interface D1Statement {
@@ -49,6 +50,12 @@ const next = openNext as Handler;
 const MEDIA_PREFIX = "/media/";
 
 /**
+ * The Worker's own address, `coordination-website.<account>.workers.dev`.
+ * Version preview URLs put `<version or alias>-` in front of it.
+ */
+const WORKERS_DEV_HOST = /^coordination-website\.[^.]+\.workers\.dev$/;
+
+/**
  * How far back each run of the hourly cron (wrangler.jsonc) looks for posts
  * that came out. Wider than the interval, so a run that fails is made up for
  * by the next ones.
@@ -68,13 +75,24 @@ const PAGE_CACHE_DELETES_PER_RUN = 5;
 
 export default {
   async fetch(request: Request, env: Env, ctx: Context): Promise<Response> {
-    const { pathname } = new URL(request.url);
+    const url = new URL(request.url);
     const read = request.method === "GET" || request.method === "HEAD";
 
-    if (read && pathname.startsWith(MEDIA_PREFIX)) return serveMedia(pathname, request.method, env);
-    if (read && pathname === "/api/home") return homeFeed(env);
+    if (!url.hostname.endsWith(".workers.dev")) return route(request, url.pathname, read, env, ctx);
 
-    return next.fetch(request, env, ctx);
+    // The site answers on *.workers.dev too, which search engines see as a
+    // duplicate of coordination.pl. The Worker's own address moves visitors
+    // there; what stays on it (preview URLs, form posts) is kept out of search.
+    if (read && WORKERS_DEV_HOST.test(url.hostname)) {
+      return Response.redirect(`${siteUrl}${url.pathname}${url.search}`, 301);
+    }
+
+    const response = await route(request, url.pathname, read, env, ctx);
+    const unindexed = new Response(response.body, response);
+
+    unindexed.headers.set("X-Robots-Tag", "noindex, nofollow");
+
+    return unindexed;
   },
 
   async scheduled(_controller: unknown, env: Env, ctx: Context) {
@@ -85,6 +103,13 @@ export default {
     if (failed) throw failed.reason;
   },
 };
+
+async function route(request: Request, pathname: string, read: boolean, env: Env, ctx: Context) {
+  if (read && pathname.startsWith(MEDIA_PREFIX)) return serveMedia(pathname, request.method, env);
+  if (read && pathname === "/api/home") return homeFeed(env);
+
+  return next.fetch(request, env, ctx);
+}
 
 /**
  * Cached post pages only change when /admin marks them stale. A post dated in

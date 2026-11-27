@@ -16,7 +16,12 @@ const nextConfig: NextConfig = {
       // WordPress kept podcast entries under their own prefix; here they are
       // posts at /<slug>, listed at /podcasty.
       { source: "/odcinek-podcastu", destination: "/podcasty", permanent: true },
-      { source: "/odcinek-podcastu/:slug", destination: "/:slug", permanent: true },
+      // `:rest*` also takes the episode's image pages (/odcinek-podcastu/<slug>/<image>).
+      { source: "/odcinek-podcastu/:slug/:rest*", destination: "/:slug", permanent: true },
+      // WordPress archives of posts by category and author: the posts are listed at /wiedza.
+      // A post's image and feed pages (/<slug>/<name>) go back to it in app/[slug]/[subpage]/route.ts.
+      { source: "/category/:path*", destination: "/wiedza", permanent: true },
+      { source: "/author/:path*", destination: "/wiedza", permanent: true },
     ];
   },
 };
