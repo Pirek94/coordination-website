@@ -30,7 +30,7 @@ npm run deploy    # build i wdrożenie na Cloudflare
 
 - `npm run preview` i `npm run deploy` wywołują `next build` w `.next`, więc nie odpalaj ich obok działającego `npm run dev`, bo nadpiszą mu pliki.
 - Klucze Resend ustawia się w Workerze: `npx wrangler secret put RESEND_API_KEY` (tak samo `RESEND_FROM_EMAIL` i `CONTACT_EMAIL`). Zmienne do lokalnego podglądu Workera trzymamy w `.dev.vars`.
-- `NEXT_PUBLIC_SITE_URL` musi być ustawione w czasie buildu, bo strony są prerenderowane. Dopóki coordination.pl nie jest przepięte, wpisz adres `*.workers.dev`.
+- Adres strony w canonicalach, Open Graph, sitemapie i robots.txt jest stały: `https://coordination.pl` (`lib/site.ts`). Główny adres `*.workers.dev` przekierowuje (301) na coordination.pl, a podglądy wersji na `*.workers.dev` dostają `X-Robots-Tag: noindex`, żeby Google nie indeksował duplikatów (`worker.ts`).
 - `next/image` optymalizuje obrazy przez binding Cloudflare Images (`IMAGES`).
 - W Workers Builds komenda buildu to `npx opennextjs-cloudflare build`, a deployu `npx opennextjs-cloudflare deploy`. Sam `wrangler deploy` nie wgra stron statycznych do cache w KV.
 
