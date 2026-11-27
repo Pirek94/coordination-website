@@ -1,3 +1,4 @@
+import { baseOpenGraph } from "@/lib/site";
 import type { Metadata } from "next";
 import SubpageHeader from "@/components/SubpageHeader/SubpageHeader";
 import Prose from "@/components/Prose/Prose";
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
     "Polityka prywatności serwisu coordination.pl - administrator danych, cele i podstawy prawne przetwarzania, prawa użytkownika oraz pliki cookies.",
   alternates: { canonical: "/polityka-prywatnosci" },
   openGraph: {
+    ...baseOpenGraph,
     title: "Polityka prywatności | Coordination",
     description:
       "Polityka prywatności serwisu coordination.pl - administrator danych, cele i podstawy prawne przetwarzania, prawa użytkownika oraz pliki cookies.",
@@ -59,16 +61,16 @@ export default function PolitykaPrywatnosciPage() {
         <p>Dane osobowe są przetwarzane na podstawie:</p>
         <ul>
           <li>
-            <strong>art. 6 ust. 1 lit. b RODO</strong> – gdy przetwarzanie jest
+            <strong>art. 6 ust. 1 lit. b RODO</strong> - gdy przetwarzanie jest
             niezbędne do podjęcia działań przed zawarciem umowy lub do wykonania
             umowy,
           </li>
           <li>
-            <strong>art. 6 ust. 1 lit. c RODO</strong> – gdy przetwarzanie jest
+            <strong>art. 6 ust. 1 lit. c RODO</strong> - gdy przetwarzanie jest
             niezbędne do wypełnienia obowiązku prawnego,
           </li>
           <li>
-            <strong>art. 6 ust. 1 lit. f RODO</strong> – gdy przetwarzanie jest
+            <strong>art. 6 ust. 1 lit. f RODO</strong> - gdy przetwarzanie jest
             niezbędne do realizacji prawnie uzasadnionego interesu administratora,
             w szczególności kontaktu z użytkownikiem, odpowiedzi na wiadomość,
             ochrony przed roszczeniami oraz zapewnienia bezpieczeństwa strony.

@@ -1,3 +1,4 @@
+import { baseOpenGraph } from "@/lib/site";
 import type { Metadata } from "next";
 import SubpageHeader from "@/components/SubpageHeader/SubpageHeader";
 import Prose from "@/components/Prose/Prose";
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
     "Regulamin strony internetowej coordination.pl - zasady korzystania z serwisu, formularza kontaktowego oraz prawa autorskie.",
   alternates: { canonical: "/regulamin" },
   openGraph: {
+    ...baseOpenGraph,
     title: "Regulamin | Coordination",
     description:
       "Regulamin strony internetowej coordination.pl - zasady korzystania z serwisu, formularza kontaktowego oraz prawa autorskie.",

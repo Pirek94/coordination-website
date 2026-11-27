@@ -9,7 +9,7 @@ import Footer from "@/components/Footer/Footer";
 import SiteNav from "@/components/SiteNav/SiteNav";
 import { htmlToText } from "@/lib/blog/content";
 import { listPublishedFaq } from "@/lib/faq/questions";
-import { siteUrl } from "@/lib/site";
+import { baseOpenGraph, siteUrl } from "@/lib/site";
 import styles from "./faq.module.css";
 
 // The answers come from the database, which the build cannot read, so the
@@ -29,6 +29,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: "/faq" },
   openGraph: {
+    ...baseOpenGraph,
     title: "FAQ - najczęściej zadawane pytania | Coordination",
     description: DESCRIPTION,
     url: "/faq",
